@@ -16,11 +16,12 @@ namespace LIBSProcessing {
 	public ref class Window : public System::Windows::Forms::Form
 	{
 	public:
-		Backend* b;
+		Backend b;
 		Window(void)
 		{
 			InitializeComponent();
 			//Initializing the backend here.
+
 			
 		}
 
@@ -57,7 +58,8 @@ namespace LIBSProcessing {
 
 	private: System::Windows::Forms::Label^ label5;
 	private: System::Windows::Forms::TextBox^ savePath;
-	private: System::Windows::Forms::TextBox^ textBox1;
+	private: System::Windows::Forms::TextBox^ nameOfFile;
+
 	private: System::Windows::Forms::Label^ label6;
 	private: System::Windows::Forms::Button^ saveToFile;
 	private: System::Windows::Forms::Button^ fileSelect;
@@ -102,7 +104,7 @@ namespace LIBSProcessing {
 			this->folderBrowser = (gcnew System::Windows::Forms::FolderBrowserDialog());
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->savePath = (gcnew System::Windows::Forms::TextBox());
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->nameOfFile = (gcnew System::Windows::Forms::TextBox());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->saveToFile = (gcnew System::Windows::Forms::Button());
 			this->fileSelect = (gcnew System::Windows::Forms::Button());
@@ -253,13 +255,12 @@ namespace LIBSProcessing {
 			this->savePath->Size = System::Drawing::Size(143, 20);
 			this->savePath->TabIndex = 14;
 			// 
-			// textBox1
+			// nameOfFile
 			// 
-			this->textBox1->Location = System::Drawing::Point(170, 376);
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->ReadOnly = true;
-			this->textBox1->Size = System::Drawing::Size(143, 20);
-			this->textBox1->TabIndex = 15;
+			this->nameOfFile->Location = System::Drawing::Point(170, 376);
+			this->nameOfFile->Name = L"nameOfFile";
+			this->nameOfFile->Size = System::Drawing::Size(143, 20);
+			this->nameOfFile->TabIndex = 15;
 			// 
 			// label6
 			// 
@@ -334,7 +335,7 @@ namespace LIBSProcessing {
 			this->Controls->Add(this->fileSelect);
 			this->Controls->Add(this->saveToFile);
 			this->Controls->Add(this->label6);
-			this->Controls->Add(this->textBox1);
+			this->Controls->Add(this->nameOfFile);
 			this->Controls->Add(this->savePath);
 			this->Controls->Add(this->label5);
 			this->Controls->Add(this->saveFolderSelect);
@@ -352,6 +353,7 @@ namespace LIBSProcessing {
 			this->Controls->Add(this->elemDropdown);
 			this->Name = L"Window";
 			this->Text = L"Window";
+			this->Load += gcnew System::EventHandler(this, &Window::Window_Load);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -375,20 +377,25 @@ namespace LIBSProcessing {
 	}
 	private: System::Void rangeToggle_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
-	//save the folder path for saving the results.
+	//GUI handler - save the folder path for saving the results.
 	private: System::Void saveFolderSelect_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (folderBrowser->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 		{
 			String^ folderName = folderBrowser->SelectedPath;
 			savePath->Text = folderName;
-			b.directory = msclr::interop::marshal_as<std::string>(folderName);
+			b.directory = folderName;		//set the directory in the backend
 		}
 	}
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
+
+//GUI handler - preview all options
 private: System::Void preview_Click(System::Object^ sender, System::EventArgs^ e) {
 }
+
+//GUI handler - save file
 private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
+	b.saveToFile(nameOfFile->Text);
 }
 
 private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -396,6 +403,8 @@ private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs
 		noOfFiles->Text = "Number of files selected: " + fileOpener->FileNames->Length;
 	}
 
+}
+private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
 }
 };
 }

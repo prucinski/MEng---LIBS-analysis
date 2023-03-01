@@ -1,9 +1,8 @@
 #pragma once
-#include <iostream>
-#include <fstream>
-#include <msclr\marshal_cppstd.h>
+
 using namespace System;
-using namespace std;
+using namespace System::IO;
+using namespace System::Windows::Forms;
 /*
 * Class handling the backend functions of the entire programme. That includes:
 * -opening files after UI has provided this class a list of filenames.
@@ -14,26 +13,35 @@ using namespace std;
 */
 
 
-class Backend {
+public ref class Backend {
 
 public:
-	string directory;
-	string nameOfFile;
+	String^ directory;
+	String^ nameOfFile;
 
 	Backend() {
+		directory = Application::StartupPath;
+		//for now.
+		nameOfFile = "default.txt";
 	
 	
 	}
 
 
-	int saveToFile() {
-		ofstream resultFile;
-		//needs to be wrapped from String^ to string.
-		string location = msclr::interop::marshal_as<std::string>(directory) + msclr::interop::marshal_as<std::string>(nameOfFile);
-		resultFile.open(location);
-		resultFile << "SavingTest.\n";
-		resultFile << "SavingTestLine2. \n";
-		resultFile.close();
+	int saveToFile(String^ name) {
+		//see if user put in any input; if not, do a default
+		if (name) {
+			nameOfFile = "\\"+name;
+		}
+		else {
+			//TODO: save a file with current date
+		}
+		StreamWriter^ sw = gcnew StreamWriter(directory + nameOfFile);
+		//testwrite
+		sw->Write("Hello World1\n");
+		sw->Write("Hello world 2");
+		sw->Close();
+
 		return 0;
 
 
