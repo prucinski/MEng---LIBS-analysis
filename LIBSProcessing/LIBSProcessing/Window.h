@@ -16,7 +16,7 @@ namespace LIBSProcessing {
 	public ref class Window : public System::Windows::Forms::Form
 	{
 	public:
-		Backend b;
+		
 		Window(void)
 		{
 			InitializeComponent();
@@ -26,6 +26,7 @@ namespace LIBSProcessing {
 		}
 
 	protected:
+		Backend b;
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -363,13 +364,13 @@ namespace LIBSProcessing {
 
 		//CODE HANDLING THE UI & calls to the "backend".
 
-	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {//cleanup
 	}
-	private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {//cleanup
 	}
-	private: System::Void label5_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void label5_Click(System::Object^ sender, System::EventArgs^ e) {//cleanup
 	}
-	private: System::Void label5_Click_1(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void label5_Click_1(System::Object^ sender, System::EventArgs^ e) {//cleanup
 	}
 	private: System::Void elemSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
@@ -398,9 +399,20 @@ private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs
 	b.saveToFile(nameOfFile->Text);
 }
 
+//GUI handler - load the files into the system
 private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
 	if (fileOpener->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-		noOfFiles->Text = "Number of files selected: " + fileOpener->FileNames->Length;
+		//if loaded files successfully, 
+		if (b.loadFiles(fileOpener->FileNames)) {
+			noOfFiles->Text = "Number of files selected: " + fileOpener->FileNames->Length;
+		}
+		//very basic handling for now.
+		else {
+			noOfFiles->Text = "Error: one of the files is not an .asc file.";
+		}
+		
+
+		
 	}
 
 }
