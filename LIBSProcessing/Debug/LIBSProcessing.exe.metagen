@@ -19,10 +19,12 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   Fields:
     System.String directory : Public
     System.String nameOfFile : Public
+    System.Collections.Generic.List`1[System.String] filesToExtract : Public
+    System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]] listOfDictionaries : Public
+    System.Collections.Generic.Dictionary`2[System.Single,System.Single] result : Public
   Methods:
     saveToFile(String): PrivateScope, Public, HideBySig
+    loadFiles(String[]): PrivateScope, Public, HideBySig
 Class LIBSProcessing.Window: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
-  Fields:
-    Backend b IsByValue : Public, InitOnly
