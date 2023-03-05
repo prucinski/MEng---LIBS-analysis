@@ -25,6 +25,13 @@ namespace LIBSProcessing {
 			
 		}
 	private: System::Windows::Forms::CheckBox^ saveSelectedBox;
+	private: System::Windows::Forms::RadioButton^ highestCheckbox;
+	private: System::Windows::Forms::RadioButton^ sumCheckbox;
+	private: System::Windows::Forms::GroupBox^ groupBox1;
+
+
+
+
 	public:
 
 	protected:
@@ -51,7 +58,7 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::ComboBox^ elemDropdown;
 	private: System::Windows::Forms::TextBox^ rangeInput;
 	private: System::Windows::Forms::Label^ label3;
-	private: System::Windows::Forms::Button^ rangeToggle;
+
 	private: System::Windows::Forms::ToolTip^ toolTip1;
 	private: System::Windows::Forms::ComboBox^ allWavelenghts;
 	private: System::Windows::Forms::Label^ label4;
@@ -98,7 +105,6 @@ namespace LIBSProcessing {
 			this->elemDropdown = (gcnew System::Windows::Forms::ComboBox());
 			this->rangeInput = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
-			this->rangeToggle = (gcnew System::Windows::Forms::Button());
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->allWavelenghts = (gcnew System::Windows::Forms::ComboBox());
 			this->label4 = (gcnew System::Windows::Forms::Label());
@@ -116,6 +122,10 @@ namespace LIBSProcessing {
 			this->noOfFiles = (gcnew System::Windows::Forms::Label());
 			this->fileOpener = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveSelectedBox = (gcnew System::Windows::Forms::CheckBox());
+			this->highestCheckbox = (gcnew System::Windows::Forms::RadioButton());
+			this->sumCheckbox = (gcnew System::Windows::Forms::RadioButton());
+			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// label1
@@ -192,18 +202,6 @@ namespace LIBSProcessing {
 			this->label3->TabIndex = 7;
 			this->label3->Text = L"Range (default 0.07nm)";
 			// 
-			// rangeToggle
-			// 
-			this->rangeToggle->Location = System::Drawing::Point(133, 140);
-			this->rangeToggle->Name = L"rangeToggle";
-			this->rangeToggle->Size = System::Drawing::Size(75, 23);
-			this->rangeToggle->TabIndex = 8;
-			this->rangeToggle->Text = L"Peak";
-			this->toolTip1->SetToolTip(this->rangeToggle, L"\"Peak\" - find the highest peak within specified range for all wavelenghts.\r\n\"Sum\""
-				L" - sum all datapoints within the range for all wavelenghts.\r\n");
-			this->rangeToggle->UseVisualStyleBackColor = true;
-			this->rangeToggle->Click += gcnew System::EventHandler(this, &Window::rangeToggle_Click);
-			// 
 			// allWavelenghts
 			// 
 			this->allWavelenghts->FormattingEnabled = true;
@@ -266,6 +264,7 @@ namespace LIBSProcessing {
 			this->nameOfFile->Name = L"nameOfFile";
 			this->nameOfFile->Size = System::Drawing::Size(143, 20);
 			this->nameOfFile->TabIndex = 15;
+			this->nameOfFile->Text = System::DateTime::Now.ToString("dd_MM_hhmm") + ".asc";
 			// 
 			// label6
 			// 
@@ -341,11 +340,46 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->Text = L"Save selected wavelengths only";
 			this->saveSelectedBox->UseVisualStyleBackColor = true;
 			// 
+			// highestCheckbox
+			// 
+			this->highestCheckbox->AutoSize = true;
+			this->highestCheckbox->Checked = true;
+			this->highestCheckbox->Location = System::Drawing::Point(6, 10);
+			this->highestCheckbox->Name = L"highestCheckbox";
+			this->highestCheckbox->Size = System::Drawing::Size(102, 17);
+			this->highestCheckbox->TabIndex = 26;
+			this->highestCheckbox->TabStop = true;
+			this->highestCheckbox->Text = L"Highest in range";
+			this->highestCheckbox->UseVisualStyleBackColor = true;
+			this->highestCheckbox->CheckedChanged += gcnew System::EventHandler(this, &Window::highestCheckbox_CheckedChanged);
+			// 
+			// sumCheckbox
+			// 
+			this->sumCheckbox->AutoSize = true;
+			this->sumCheckbox->Location = System::Drawing::Point(6, 26);
+			this->sumCheckbox->Name = L"sumCheckbox";
+			this->sumCheckbox->Size = System::Drawing::Size(87, 17);
+			this->sumCheckbox->TabIndex = 27;
+			this->sumCheckbox->Text = L"Sum in range";
+			this->sumCheckbox->UseVisualStyleBackColor = true;
+			this->sumCheckbox->CheckedChanged += gcnew System::EventHandler(this, &Window::sumCheckbox_CheckedChanged);
+			// 
+			// groupBox1
+			// 
+			this->groupBox1->Controls->Add(this->highestCheckbox);
+			this->groupBox1->Controls->Add(this->sumCheckbox);
+			this->groupBox1->Location = System::Drawing::Point(132, 122);
+			this->groupBox1->Name = L"groupBox1";
+			this->groupBox1->Size = System::Drawing::Size(103, 49);
+			this->groupBox1->TabIndex = 28;
+			this->groupBox1->TabStop = false;
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->saveSelectedBox);
 			this->Controls->Add(this->noOfFiles);
 			this->Controls->Add(this->preview);
@@ -360,7 +394,6 @@ namespace LIBSProcessing {
 			this->Controls->Add(this->removeWave);
 			this->Controls->Add(this->label4);
 			this->Controls->Add(this->allWavelenghts);
-			this->Controls->Add(this->rangeToggle);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->rangeInput);
 			this->Controls->Add(this->elemSubmit);
@@ -372,6 +405,8 @@ namespace LIBSProcessing {
 			this->Name = L"Window";
 			this->Text = L"Window";
 			this->Load += gcnew System::EventHandler(this, &Window::Window_Load);
+			this->groupBox1->ResumeLayout(false);
+			this->groupBox1->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -389,12 +424,31 @@ namespace LIBSProcessing {
 	}
 	private: System::Void label5_Click_1(System::Object^ sender, System::EventArgs^ e) {//cleanup
 	}
+
+	//GUI handler - submit an element's wavelengths to the list
 	private: System::Void elemSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
+	//GUI handler - submit custom wavelengths to the list
 	private: System::Void waveSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
+		float attemptConversion;
+		//try converting - if failed, show a message to the user
+		try {
+			attemptConversion = Convert::ToDouble(waveEdit->Text);
+		}
+		catch (...) {
+			MessageBox::Show("Error - please input a float value");
+			return;
+		}
+
+		if (!b.addWavelength(attemptConversion)) {
+			MessageBox::Show("Error - please input a value between 200.93 and 1031.86");
+		}
+		//for some reason, it order to update the list in the GUI it needs to be fully reset
+		allWavelenghts->DataSource = nullptr;
+		allWavelenghts->DataSource = b.selectedWavelengths;
+
 	}
-	private: System::Void rangeToggle_Click(System::Object^ sender, System::EventArgs^ e) {
-	}
+
 	//GUI handler - save the folder path for saving the results.
 	private: System::Void saveFolderSelect_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (folderBrowser->ShowDialog() == System::Windows::Forms::DialogResult::OK)
@@ -407,39 +461,42 @@ namespace LIBSProcessing {
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 
-//GUI handler - preview all options - actually processes the data for now as well
-private: System::Void preview_Click(System::Object^ sender, System::EventArgs^ e) {
-	if (saveSelectedBox->Checked) {
-		b.getWavelengthsFromFiles();
+	//GUI handler - preview all options - actually processes the data for now as well
+	private: System::Void preview_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (b.getAveragedSpectra()) {}
+		else { MessageBox::Show("Error - no files loaded"); return; }
+		int option = 2;
+		if (highestCheckbox->Checked) { option = 1; }
+		b.getRequestedSpectra(option);
 	}
-	else {
-		b.getAveragedSpectra();
+
+	//GUI handler - save file
+	private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
+		b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked);
 	}
-}
 
-//GUI handler - save file
-private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
-	b.saveToFile(nameOfFile->Text);
-}
-
-//GUI handler - load the files into the system
-private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
-	if (fileOpener->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-		//if loaded files successfully, 
-		if (b.loadFiles(fileOpener->FileNames)) {
-			noOfFiles->Text = "Number of files selected: " + fileOpener->FileNames->Length;
+	//GUI handler - load the files into the system
+	private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (fileOpener->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			//if loaded files successfully, 
+			if (b.loadFiles(fileOpener->FileNames)) {
+				noOfFiles->Text = "Number of files selected: " + fileOpener->FileNames->Length;
+			}
+			//very basic handling for now.
+			else {
+				noOfFiles->Text = "Error: one of the files is not an .asc file.";
+			}
 		}
-		//very basic handling for now.
-		else {
-			noOfFiles->Text = "Error: one of the files is not an .asc file.";
-		}
-		
 
-		
 	}
+	private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
+	}
+	//GUI handlers for the two checkbox for range controls.
+	private: System::Void highestCheckbox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 
-}
-private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
-}
+	};
+	private: System::Void sumCheckbox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+
+	}
 };
 }

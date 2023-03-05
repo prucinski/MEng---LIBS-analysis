@@ -26,8 +26,12 @@ public:
 	String^ directory;
 	String^ nameOfFile;
 	List<String^>^ filesToExtract;
-	List<Dictionary<float, float>^>^ listOfDictionaries;		//dictionary has O(1) access time when passed the key.
-	Dictionary<float, float>^ result;
+	List<Dictionary<float, float>^>^ listOfDictionaries;		//dictionary has O(1) access time when passed the key. Holds all files.
+	Dictionary<float, float>^ result;							//summed dictionary of provided files.
+	List<float>^ indexedKeys;									//Indexing the keys in the dictionary for easy sequential access.
+	Dictionary<float, float>^ presentToUserResult;				//Final-final result that is saved to the computer.
+	List<float>^ selectedWavelengths;							//A list of floats that the user selected for processing.
+	List<float>^ userSelectionsToKeys;							//A list which holds the user selections, but as keys that can be used with dictionaries.
 	
 
 
@@ -37,10 +41,11 @@ public:
 		nameOfFile = "default.txt";
 		//initialize the (now empty) dynamically allocated array.
 		filesToExtract = gcnew List<String^>();
+		selectedWavelengths = gcnew List<float>();
 	}
 
 
-	int saveToFile(String^ name) {
+	int saveToFile(String^ name, bool selectedOnly) {
 		//see if user put in any input; if not, do a default
 		if (name) {
 			nameOfFile = "\\"+name;
@@ -51,9 +56,11 @@ public:
 		else {
 			//TODO: save a file with current date
 		}
+		//if o
+		Dictionary<float, float>^ whatToSave = selectedOnly ? presentToUserResult : result;
 		StreamWriter^ sw = gcnew StreamWriter(directory + nameOfFile);
 		//loop through all the keys
-		for each (float key in result->Keys) {
+		for each (float key in whatToSave->Keys) {
 			sw->Write(Convert::ToString(key));
 			sw->Write(',');
 			sw->Write(Convert::ToString(result[key]));
@@ -78,13 +85,27 @@ public:
 
 		return 1;
 	}
+
 	//function to be called by the UI to process the dictionary as per our selected wavelengths.
-	int getWavelengthsFromFiles() {
+	//option values:	1 - find highest peak within range
+	//					2 - sum all datapoints within range
+	int getRequestedSpectra(int option) {
+		//first, keys CLOSEST to the value that the user input must be found.
+		findKeys();
 		return 1;
+
 	}
 
 	int getAveragedSpectra() {
 		return sumDictionaries();
+	}
+
+	int addWavelength(float wavelength) {
+		if (wavelength < 200.93 || wavelength > 1031.86) {
+			return 0;
+		}
+		selectedWavelengths->Add(wavelength);
+		return 1;
 	}
 
 
@@ -144,6 +165,10 @@ private:
 		//TODO - check if the dictionary isn't already created.
 		//Shouldn't be that big of a deal however because automated garbage collection.
 		result = gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP);
+		indexedKeys = gcnew List<float>(DATASIZE - LINESTOSKIP);
+		if (listOfDictionaries == nullptr) {
+			return 0;
+		}
 
 		for each (float key in listOfDictionaries[0]->Keys) {
 			float tempValue = 0; 
@@ -156,10 +181,69 @@ private:
 			}
 			//average of n spectra.
 			result->Add(key, tempValue / listOfDictionaries->Count);
+			indexedKeys->Add(key);
 		}
 		return 1;
 
 
+	}
+
+	//find keys for user-supplied values. This was probably the trickiest part of the design to get a good time complexity.
+	//It fills the dictionary that's self-contained.
+	int findKeys() {
+		if (userSelectionsToKeys == nullptr) {
+			userSelectionsToKeys = gcnew List<float>();
+		}
+
+		for each (float wavelength in selectedWavelengths) {
+			//guesstimate the index based the distances of the datapoints.
+			//A line of best fit that maps index to wavelength is y = 201.96*e^(6*10^-5*x), as per Excel.
+			//I have modified it slightly after manually inspecting the mappings, and the formula for loosely recovering
+			//the index is presented below.
+			int assumedIndex = Math::Floor(Math::Pow(10, 5) / 6.21 * Math::Log(wavelength / 200.9381));
+			//now, see and compare. This is heavily amortized computationally, and will not go over more than 200 iterations for each point.
+			//1.Rarest scenario. We have estimated exactly the correct key
+			float tempDiff, newDiff;
+			if (indexedKeys[assumedIndex] == wavelength) {
+				userSelectionsToKeys->Add(wavelength);
+				continue;
+			}
+			//2. We have estmimated the key to be too large. Try a lower key one by one.
+			else if (indexedKeys[assumedIndex] >= wavelength) {
+				while (indexedKeys[assumedIndex] >= wavelength) {
+					tempDiff = Math::Abs(indexedKeys[assumedIndex] - wavelength);
+					assumedIndex -= 1;
+					newDiff = Math::Abs(indexedKeys[assumedIndex] - wavelength);
+				}
+				//now, we are pretty much spot on. Just check whether to select assumedIndex or assumedIndex+1.
+				if (tempDiff > newDiff) {
+					userSelectionsToKeys->Add(indexedKeys[assumedIndex]);
+				}
+				else {
+					userSelectionsToKeys->Add(indexedKeys[assumedIndex + 1]);
+				}
+				continue;
+			}
+			//3. We have estimated the key to be too small. Try a higher key.
+			else {
+				while (indexedKeys[assumedIndex] <= wavelength) {
+					tempDiff = Math::Abs(indexedKeys[assumedIndex] - wavelength);
+					assumedIndex += 1;
+					newDiff = Math::Abs(indexedKeys[assumedIndex] - wavelength);
+				}
+				//now, we are pretty much spot on. Just check whether to select assumedIndex or assumedIndex+1.
+				if (tempDiff > newDiff) {
+					userSelectionsToKeys->Add(indexedKeys[assumedIndex]);
+				}
+				else {
+					userSelectionsToKeys->Add(indexedKeys[assumedIndex -1]);
+				}
+				continue;
+			}
+
+		}
+		//success.
+		return 1;
 	}
 
 
