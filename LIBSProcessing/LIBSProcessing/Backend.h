@@ -45,13 +45,21 @@ public:
 		if (name) {
 			nameOfFile = "\\"+name;
 		}
+		if (!name->EndsWith(".asc")) {
+			nameOfFile = nameOfFile + ".asc";
+		}
 		else {
 			//TODO: save a file with current date
 		}
 		StreamWriter^ sw = gcnew StreamWriter(directory + nameOfFile);
-		//testwrite
-		sw->Write("Hello World1\n");
-		sw->Write("Hello world 2");
+		//loop through all the keys
+		for each (float key in result->Keys) {
+			sw->Write(Convert::ToString(key));
+			sw->Write(',');
+			sw->Write(Convert::ToString(result[key]));
+			sw->Write('\n');
+		}
+
 		sw->Close();
 		//TODO: exception handling
 		return 1;
@@ -69,6 +77,14 @@ public:
 		initializeMemoryFiles();
 
 		return 1;
+	}
+	//function to be called by the UI to process the dictionary as per our selected wavelengths.
+	int getWavelengthsFromFiles() {
+		return 1;
+	}
+
+	int getAveragedSpectra() {
+		return sumDictionaries();
 	}
 
 
@@ -130,14 +146,18 @@ private:
 		result = gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP);
 
 		for each (float key in listOfDictionaries[0]->Keys) {
-			float tempValue = 0;
+			float tempValue = 0; 
+			Dictionary<float, float>^ temp;
 			for (int j = 0; j < listOfDictionaries->Count; j++) {
 				//it's upset when I'm doing double dereferencing. It's a good thing temp is a pointer so there is not a lot
-				//of overhead.
-				Dictionary<float, float>^ temp = listOfDictionaries[j];
+				//of overhead; still the reassignments are taking up processor cycles
+				temp = listOfDictionaries[j];
 				tempValue += temp[key];
 			}
+			//average of n spectra.
+			result->Add(key, tempValue / listOfDictionaries->Count);
 		}
+		return 1;
 
 
 	}

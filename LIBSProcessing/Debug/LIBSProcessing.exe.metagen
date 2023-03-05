@@ -25,6 +25,8 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   Methods:
     saveToFile(String): PrivateScope, Public, HideBySig
     loadFiles(String[]): PrivateScope, Public, HideBySig
+    getWavelengthsFromFiles(): PrivateScope, Public, HideBySig
+    getAveragedSpectra(): PrivateScope, Public, HideBySig
 Class LIBSProcessing.Window: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

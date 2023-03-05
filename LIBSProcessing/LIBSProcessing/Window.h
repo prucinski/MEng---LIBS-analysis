@@ -24,6 +24,8 @@ namespace LIBSProcessing {
 
 			
 		}
+	private: System::Windows::Forms::CheckBox^ saveSelectedBox;
+	public:
 
 	protected:
 		Backend b;
@@ -113,6 +115,7 @@ namespace LIBSProcessing {
 			this->preview = (gcnew System::Windows::Forms::Button());
 			this->noOfFiles = (gcnew System::Windows::Forms::Label());
 			this->fileOpener = (gcnew System::Windows::Forms::OpenFileDialog());
+			this->saveSelectedBox = (gcnew System::Windows::Forms::CheckBox());
 			this->SuspendLayout();
 			// 
 			// label1
@@ -131,6 +134,7 @@ namespace LIBSProcessing {
 			this->waveEdit->Name = L"waveEdit";
 			this->waveEdit->Size = System::Drawing::Size(100, 20);
 			this->waveEdit->TabIndex = 2;
+			this->waveEdit->Text = L"12";
 			// 
 			// waveSubmit
 			// 
@@ -325,11 +329,24 @@ namespace LIBSProcessing {
 			this->fileOpener->FileName = L"Select your files...";
 			this->fileOpener->Multiselect = true;
 			// 
+			// saveSelectedBox
+			// 
+			this->saveSelectedBox->AutoSize = true;
+			this->saveSelectedBox->Checked = true;
+			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 230);
+			this->saveSelectedBox->Name = L"saveSelectedBox";
+			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
+			this->saveSelectedBox->TabIndex = 23;
+			this->saveSelectedBox->Text = L"Save selected wavelengths only";
+			this->saveSelectedBox->UseVisualStyleBackColor = true;
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->saveSelectedBox);
 			this->Controls->Add(this->noOfFiles);
 			this->Controls->Add(this->preview);
 			this->Controls->Add(this->label7);
@@ -390,8 +407,14 @@ namespace LIBSProcessing {
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 
-//GUI handler - preview all options
+//GUI handler - preview all options - actually processes the data for now as well
 private: System::Void preview_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (saveSelectedBox->Checked) {
+		b.getWavelengthsFromFiles();
+	}
+	else {
+		b.getAveragedSpectra();
+	}
 }
 
 //GUI handler - save file
