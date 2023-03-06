@@ -264,6 +264,7 @@ namespace LIBSProcessing {
 			this->nameOfFile->Name = L"nameOfFile";
 			this->nameOfFile->Size = System::Drawing::Size(143, 20);
 			this->nameOfFile->TabIndex = 15;
+			//this->nameOfFile->Text = "TEMP.asc";
 			this->nameOfFile->Text = System::DateTime::Now.ToString("dd_MM_hhmm") + ".asc";
 			// 
 			// label6
@@ -425,8 +426,11 @@ namespace LIBSProcessing {
 	private: System::Void label5_Click_1(System::Object^ sender, System::EventArgs^ e) {//cleanup
 	}
 
-	//GUI handler - submit an element's wavelengths to the list
+	//GUI handler - submit an ELEMENT'S wavelengths to the list
 	private: System::Void elemSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
+
+
+
 	}
 	//GUI handler - submit custom wavelengths to the list
 	private: System::Void waveSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -458,7 +462,12 @@ namespace LIBSProcessing {
 			b.directory = folderName;		//set the directory in the backend
 		}
 	}
+	//GUI handler - remove wavelength from analysis
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
+		float waveToRemove = Convert::ToDouble(allWavelenghts->Text);
+		b.removeWavelength(waveToRemove);
+		allWavelenghts->DataSource = nullptr;
+		allWavelenghts->DataSource = b.selectedWavelengths;
 	}
 
 	//GUI handler - preview all options - actually processes the data for now as well
@@ -467,7 +476,17 @@ namespace LIBSProcessing {
 		else { MessageBox::Show("Error - no files loaded"); return; }
 		int option = 2;
 		if (highestCheckbox->Checked) { option = 1; }
-		b.getRequestedSpectra(option);
+		float range;
+		try {
+			range = Convert::ToDouble(rangeInput->Text);
+			if (range < 0) { range = -1 * range; };
+		}
+		catch (...) {
+			MessageBox::Show("Error - range must be a float");
+			return;
+		}
+
+		b.getRequestedSpectra(option, range);
 	}
 
 	//GUI handler - save file

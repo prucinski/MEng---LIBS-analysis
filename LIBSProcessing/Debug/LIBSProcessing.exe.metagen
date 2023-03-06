@@ -26,12 +26,14 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.Dictionary`2[System.Single,System.Single] presentToUserResult : Public
     System.Collections.Generic.List`1[System.Single] selectedWavelengths : Public
     System.Collections.Generic.List`1[System.Single] userSelectionsToKeys : Public
+    System.Collections.Generic.List`1[System.Int32] userSelectionsIndexes : Public
   Methods:
     saveToFile(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     loadFiles(String[]): PrivateScope, Public, HideBySig
-    getRequestedSpectra(Int32): PrivateScope, Public, HideBySig
+    getRequestedSpectra(Int32, Single): PrivateScope, Public, HideBySig
     getAveragedSpectra(): PrivateScope, Public, HideBySig
     addWavelength(Single): PrivateScope, Public, HideBySig
+    removeWavelength(Single): PrivateScope, Public, HideBySig
 Class LIBSProcessing.Window: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

@@ -32,6 +32,8 @@ public:
 	Dictionary<float, float>^ presentToUserResult;				//Final-final result that is saved to the computer.
 	List<float>^ selectedWavelengths;							//A list of floats that the user selected for processing.
 	List<float>^ userSelectionsToKeys;							//A list which holds the user selections, but as keys that can be used with dictionaries.
+	List<int>^ userSelectionsIndexes;							//As dictionaries are unsorted, we need to keep track of the indexes as well.
+
 	
 
 
@@ -89,9 +91,10 @@ public:
 	//function to be called by the UI to process the dictionary as per our selected wavelengths.
 	//option values:	1 - find highest peak within range
 	//					2 - sum all datapoints within range
-	int getRequestedSpectra(int option) {
+	int getRequestedSpectra(int option, float range) {
 		//first, keys CLOSEST to the value that the user input must be found.
 		findKeys();
+		findRequestedValues(option, range);
 		return 1;
 
 	}
@@ -105,6 +108,11 @@ public:
 			return 0;
 		}
 		selectedWavelengths->Add(wavelength);
+		return 1;
+	}
+
+	int removeWavelength(float wavelength) {
+		selectedWavelengths->Remove(wavelength);
 		return 1;
 	}
 
@@ -193,6 +201,7 @@ private:
 	int findKeys() {
 		if (userSelectionsToKeys == nullptr) {
 			userSelectionsToKeys = gcnew List<float>();
+			userSelectionsIndexes = gcnew List<int>();
 		}
 
 		for each (float wavelength in selectedWavelengths) {
@@ -218,9 +227,11 @@ private:
 				//now, we are pretty much spot on. Just check whether to select assumedIndex or assumedIndex+1.
 				if (tempDiff > newDiff) {
 					userSelectionsToKeys->Add(indexedKeys[assumedIndex]);
+					userSelectionsIndexes->Add(assumedIndex);
 				}
 				else {
 					userSelectionsToKeys->Add(indexedKeys[assumedIndex + 1]);
+					userSelectionsIndexes->Add(assumedIndex+1);
 				}
 				continue;
 			}
@@ -231,12 +242,13 @@ private:
 					assumedIndex += 1;
 					newDiff = Math::Abs(indexedKeys[assumedIndex] - wavelength);
 				}
-				//now, we are pretty much spot on. Just check whether to select assumedIndex or assumedIndex+1.
 				if (tempDiff > newDiff) {
 					userSelectionsToKeys->Add(indexedKeys[assumedIndex]);
+					userSelectionsIndexes->Add(assumedIndex);
 				}
 				else {
 					userSelectionsToKeys->Add(indexedKeys[assumedIndex -1]);
+					userSelectionsIndexes->Add(assumedIndex-1);
 				}
 				continue;
 			}
@@ -245,6 +257,56 @@ private:
 		//success.
 		return 1;
 	}
+
+	//Find the results in a provided range.
+	int findRequestedValues(int option, float range) {
+		float rangeEachWay = range / 2;
+		if (option == 2) { option = 0; }	//TODO clean this up
+		float tempResult = option ? -9999 : 0;
+		float currKey;
+		int index;
+		int i = 0;
+		for each (float key in userSelectionsToKeys) {
+			index = userSelectionsIndexes[i];
+			currKey = indexedKeys[index];
+			//left hand side of the selected point
+			while (Math::Abs(key - currKey) < rangeEachWay) {
+				if (option) {
+					tempResult = result[currKey] > tempResult ? result[currKey] : tempResult;
+				}
+				else {
+					tempResult += result[currKey];
+				}
+				if (index == 0) { break; }
+				index--;
+
+				currKey = indexedKeys[index];
+			}
+			//escaped the while loop. Now do it again, but the other way. Admittedly there is redundancy in this code.
+			index = userSelectionsIndexes[i];
+			currKey = indexedKeys[index + 1];
+			while (Math::Abs(key - currKey) < rangeEachWay) {
+				if (option) {
+					tempResult = result[currKey] > tempResult ? result[currKey] : tempResult;
+				}
+				else {
+					tempResult += result[currKey];
+				}
+				if (index == DATASIZE - LINESTOSKIP) {break;}
+				index++;
+				currKey = indexedKeys[index];
+			}
+			//now we have found the highest value. Add to the proper result dictionary.
+			if (presentToUserResult == nullptr) {
+				presentToUserResult = gcnew Dictionary<float, float>();
+			}
+			presentToUserResult->Add(key, tempResult);
+			i++;
+
+		}
+		return 1;
+	}
+	
 
 
 
