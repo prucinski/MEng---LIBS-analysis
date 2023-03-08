@@ -29,7 +29,7 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.List`1[System.Int32] userSelectionsIndexes : Public
   Methods:
     saveToFile(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
-    loadFiles(String[]): PrivateScope, Public, HideBySig
+    loadFiles(String[], Single): PrivateScope, Public, HideBySig
     getRequestedSpectra(Int32, Single): PrivateScope, Public, HideBySig
     getAveragedSpectra(): PrivateScope, Public, HideBySig
     addWavelength(Single): PrivateScope, Public, HideBySig

@@ -28,6 +28,11 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::RadioButton^ highestCheckbox;
 	private: System::Windows::Forms::RadioButton^ sumCheckbox;
 	private: System::Windows::Forms::GroupBox^ groupBox1;
+	private: System::Windows::Forms::TextBox^ noiseCutoff;
+	private: System::Windows::Forms::Label^ label8;
+	private: System::Windows::Forms::Label^ label9;
+	private: System::Windows::Forms::Label^ cutoffLabel;
+
 
 
 
@@ -106,6 +111,7 @@ namespace LIBSProcessing {
 			this->rangeInput = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
+			this->noiseCutoff = (gcnew System::Windows::Forms::TextBox());
 			this->allWavelenghts = (gcnew System::Windows::Forms::ComboBox());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->removeWave = (gcnew System::Windows::Forms::Button());
@@ -125,6 +131,9 @@ namespace LIBSProcessing {
 			this->highestCheckbox = (gcnew System::Windows::Forms::RadioButton());
 			this->sumCheckbox = (gcnew System::Windows::Forms::RadioButton());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->label9 = (gcnew System::Windows::Forms::Label());
+			this->cutoffLabel = (gcnew System::Windows::Forms::Label());
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -144,7 +153,6 @@ namespace LIBSProcessing {
 			this->waveEdit->Name = L"waveEdit";
 			this->waveEdit->Size = System::Drawing::Size(100, 20);
 			this->waveEdit->TabIndex = 2;
-			this->waveEdit->Text = L"12";
 			// 
 			// waveSubmit
 			// 
@@ -201,6 +209,14 @@ namespace LIBSProcessing {
 			this->label3->Size = System::Drawing::Size(118, 13);
 			this->label3->TabIndex = 7;
 			this->label3->Text = L"Range (default 0.07nm)";
+			// 
+			// noiseCutoff
+			// 
+			this->noiseCutoff->Location = System::Drawing::Point(254, 38);
+			this->noiseCutoff->Name = L"noiseCutoff";
+			this->noiseCutoff->Size = System::Drawing::Size(100, 20);
+			this->noiseCutoff->TabIndex = 29;
+			this->toolTip1->SetToolTip(this->noiseCutoff, L"Values below this threshold will be dropped to 0.");
 			// 
 			// allWavelenghts
 			// 
@@ -264,8 +280,7 @@ namespace LIBSProcessing {
 			this->nameOfFile->Name = L"nameOfFile";
 			this->nameOfFile->Size = System::Drawing::Size(143, 20);
 			this->nameOfFile->TabIndex = 15;
-			//this->nameOfFile->Text = "TEMP.asc";
-			this->nameOfFile->Text = System::DateTime::Now.ToString("dd_MM_hhmm") + ".asc";
+			this->nameOfFile->Text = L"TEMP.asc";
 			// 
 			// label6
 			// 
@@ -288,7 +303,7 @@ namespace LIBSProcessing {
 			// 
 			// fileSelect
 			// 
-			this->fileSelect->Location = System::Drawing::Point(415, 33);
+			this->fileSelect->Location = System::Drawing::Point(415, 64);
 			this->fileSelect->Name = L"fileSelect";
 			this->fileSelect->Size = System::Drawing::Size(75, 23);
 			this->fileSelect->TabIndex = 18;
@@ -299,7 +314,7 @@ namespace LIBSProcessing {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(241, 38);
+			this->label7->Location = System::Drawing::Point(241, 69);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(113, 13);
 			this->label7->TabIndex = 19;
@@ -307,22 +322,22 @@ namespace LIBSProcessing {
 			// 
 			// preview
 			// 
-			this->preview->Location = System::Drawing::Point(196, 260);
+			this->preview->Location = System::Drawing::Point(196, 290);
 			this->preview->Name = L"preview";
 			this->preview->Size = System::Drawing::Size(108, 21);
 			this->preview->TabIndex = 20;
-			this->preview->Text = L"Preview results";
+			this->preview->Text = L"Process results";
 			this->preview->UseVisualStyleBackColor = true;
 			this->preview->Click += gcnew System::EventHandler(this, &Window::preview_Click);
 			// 
 			// noOfFiles
 			// 
 			this->noOfFiles->AutoSize = true;
-			this->noOfFiles->Location = System::Drawing::Point(241, 90);
+			this->noOfFiles->Location = System::Drawing::Point(412, 90);
 			this->noOfFiles->Name = L"noOfFiles";
-			this->noOfFiles->Size = System::Drawing::Size(135, 13);
+			this->noOfFiles->Size = System::Drawing::Size(80, 13);
 			this->noOfFiles->TabIndex = 21;
-			this->noOfFiles->Text = L"Number of files selected: 0 ";
+			this->noOfFiles->Text = L"files selected: 0";
 			// 
 			// fileOpener
 			// 
@@ -375,11 +390,42 @@ namespace LIBSProcessing {
 			this->groupBox1->TabIndex = 28;
 			this->groupBox1->TabStop = false;
 			// 
+			// label8
+			// 
+			this->label8->AutoSize = true;
+			this->label8->Location = System::Drawing::Point(251, 19);
+			this->label8->Name = L"label8";
+			this->label8->Size = System::Drawing::Size(192, 13);
+			this->label8->TabIndex = 30;
+			this->label8->Text = L"Noise cutoff (select before loading files)";
+			// 
+			// label9
+			// 
+			this->label9->AutoSize = true;
+			this->label9->Location = System::Drawing::Point(374, 41);
+			this->label9->Name = L"label9";
+			this->label9->Size = System::Drawing::Size(126, 13);
+			this->label9->TabIndex = 31;
+			this->label9->Text = L"Leave blank for no cutoff";
+			// 
+			// cutoffLabel
+			// 
+			this->cutoffLabel->AutoSize = true;
+			this->cutoffLabel->Location = System::Drawing::Point(412, 103);
+			this->cutoffLabel->Name = L"cutoffLabel";
+			this->cutoffLabel->Size = System::Drawing::Size(73, 13);
+			this->cutoffLabel->TabIndex = 32;
+			this->cutoffLabel->Text = L"at cutoff: -199";
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->cutoffLabel);
+			this->Controls->Add(this->label9);
+			this->Controls->Add(this->label8);
+			this->Controls->Add(this->noiseCutoff);
 			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->saveSelectedBox);
 			this->Controls->Add(this->noOfFiles);
@@ -496,10 +542,27 @@ namespace LIBSProcessing {
 
 	//GUI handler - load the files into the system
 	private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
+		float cutoff;
+		//if loaded files successfully, 
 		if (fileOpener->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-			//if loaded files successfully, 
-			if (b.loadFiles(fileOpener->FileNames)) {
-				noOfFiles->Text = "Number of files selected: " + fileOpener->FileNames->Length;
+			//try converting noiseCutoff to double,
+			try {
+				if (noiseCutoff->Text == "") {
+					cutoff = -199;
+				}
+				else {
+					cutoff = Convert::ToDouble(noiseCutoff->Text);
+				}
+			}
+			//if unsuccessful, inform user and continue operation.
+			catch (...) {
+				MessageBox::Show("Cutoff value is not a float, setting to no cutoff.");
+				cutoff = -199;
+			}
+			//and process the files into the memory.
+			if (b.loadFiles(fileOpener->FileNames, cutoff)) {
+				noOfFiles->Text = "files selected: " + fileOpener->FileNames->Length;
+				cutoffLabel->Text = "at cutoff: " + cutoff;
 			}
 			//very basic handling for now.
 			else {

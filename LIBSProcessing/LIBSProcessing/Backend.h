@@ -74,7 +74,7 @@ public:
 		return 1;
 	}
 
-	int loadFiles(array<String^>^ fileNames) {
+	int loadFiles(array<String^>^ fileNames, float cutoff) {
 		for each (String^ filename in fileNames) {
 			if (filename->EndsWith(".asc")) {
 				filesToExtract->Add(filename);
@@ -83,7 +83,7 @@ public:
 				return 0;
 			}
 		}
-		initializeMemoryFiles();
+		initializeMemoryFiles(cutoff);
 
 		return 1;
 	}
@@ -121,7 +121,7 @@ public:
 
 private:
 	//pass by reference. Function to pass the information from the file into a data structure.
-	int processFileIntoDictionary(Dictionary<float, float>^ dict, String^ filename) {
+	int processFileIntoDictionary(Dictionary<float, float>^ dict, String^ filename, float cutoff) {
 		//file might be opened by another process
 		StreamReader^ sr;
 		try {
@@ -146,7 +146,13 @@ private:
 			//split line into two strings
 			thisKeyValArray = line->Split(',', 2);
 			//and add to the dictionary.
-			dict->Add(Convert::ToDouble(thisKeyValArray[0]), Convert::ToDouble(thisKeyValArray[1]));
+			if (Convert::ToDouble(thisKeyValArray[1]) < cutoff) {
+				dict->Add(Convert::ToDouble(thisKeyValArray[0]), 0);
+			}
+			else {
+				dict->Add(Convert::ToDouble(thisKeyValArray[0]), Convert::ToDouble(thisKeyValArray[1]));
+			}
+
 		}
 		return 1;
 	}
@@ -156,14 +162,14 @@ private:
 	//we have 10*26606 *8 = 2128480B = 2078 KiB = around 2MiB. All is good.
 	//Depending on the version of the programme, data will be double instead of float, so 4MiB.
 
-	int initializeMemoryFiles() {
+	int initializeMemoryFiles(float cutoff) {
 		int lengthOfListOfMaps = filesToExtract->Count;
 		//allocating memory so that the array does not need resizing
 		listOfDictionaries = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
 		//create and populate a dictionary of data for each of the files.
 		for (int i = 0; i < lengthOfListOfMaps; i++) {
 			listOfDictionaries->Add(gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP));
-			processFileIntoDictionary(listOfDictionaries[i], filesToExtract[i]);
+			processFileIntoDictionary(listOfDictionaries[i], filesToExtract[i], cutoff);
 		}
 		return 1;
 	}
