@@ -36,6 +36,23 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::ToolStripMenuItem^ modeToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ standardToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^ calibrationToolStripMenuItem;
+	private: System::Windows::Forms::Label^ setAlabel;
+	private: System::Windows::Forms::Label^ setBlabel;
+
+	private: System::Windows::Forms::Label^ cutoffLabel_setB;
+	private: System::Windows::Forms::Label^ noOfFiles_setB;
+	private: System::Windows::Forms::Label^ selectFilesLabel_setB;
+
+	private: System::Windows::Forms::Button^ fileSelect_setB;
+	private: System::Windows::Forms::TextBox^ analyteBox;
+	private: System::Windows::Forms::Label^ analyteLabel;
+	private: System::Windows::Forms::Label^ analyteLabel_setB;
+
+
+	private: System::Windows::Forms::TextBox^ analyteBox_setB;
+	private: System::ComponentModel::BackgroundWorker^ backgroundWorker1;
+	private: System::Windows::Forms::Label^ setNumbersLabel;
+
 
 
 
@@ -116,6 +133,9 @@ namespace LIBSProcessing {
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->noiseCutoff = (gcnew System::Windows::Forms::TextBox());
+			this->analyteBox = (gcnew System::Windows::Forms::TextBox());
+			this->analyteBox_setB = (gcnew System::Windows::Forms::TextBox());
+			this->setNumbersLabel = (gcnew System::Windows::Forms::Label());
 			this->allWavelenghts = (gcnew System::Windows::Forms::ComboBox());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->removeWave = (gcnew System::Windows::Forms::Button());
@@ -142,6 +162,15 @@ namespace LIBSProcessing {
 			this->modeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->standardToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->calibrationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->setAlabel = (gcnew System::Windows::Forms::Label());
+			this->setBlabel = (gcnew System::Windows::Forms::Label());
+			this->cutoffLabel_setB = (gcnew System::Windows::Forms::Label());
+			this->noOfFiles_setB = (gcnew System::Windows::Forms::Label());
+			this->selectFilesLabel_setB = (gcnew System::Windows::Forms::Label());
+			this->fileSelect_setB = (gcnew System::Windows::Forms::Button());
+			this->analyteLabel = (gcnew System::Windows::Forms::Label());
+			this->analyteLabel_setB = (gcnew System::Windows::Forms::Label());
+			this->backgroundWorker1 = (gcnew System::ComponentModel::BackgroundWorker());
 			this->groupBox1->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -154,7 +183,6 @@ namespace LIBSProcessing {
 			this->label1->Size = System::Drawing::Size(194, 13);
 			this->label1->TabIndex = 1;
 			this->label1->Text = L"Add element (to be filled with db entries)";
-			this->label1->Click += gcnew System::EventHandler(this, &Window::label1_Click);
 			// 
 			// waveEdit
 			// 
@@ -181,7 +209,6 @@ namespace LIBSProcessing {
 			this->label2->Size = System::Drawing::Size(89, 13);
 			this->label2->TabIndex = 4;
 			this->label2->Text = L"Add wavelengths";
-			this->label2->Click += gcnew System::EventHandler(this, &Window::label2_Click);
 			// 
 			// elemSubmit
 			// 
@@ -226,6 +253,35 @@ namespace LIBSProcessing {
 			this->noiseCutoff->Size = System::Drawing::Size(100, 20);
 			this->noiseCutoff->TabIndex = 29;
 			this->toolTip1->SetToolTip(this->noiseCutoff, L"Values below this threshold will be dropped to 0.");
+			// 
+			// analyteBox
+			// 
+			this->analyteBox->Enabled = false;
+			this->analyteBox->Location = System::Drawing::Point(254, 135);
+			this->analyteBox->Name = L"analyteBox";
+			this->analyteBox->Size = System::Drawing::Size(100, 20);
+			this->analyteBox->TabIndex = 40;
+			this->toolTip1->SetToolTip(this->analyteBox, L"Values below this threshold will be dropped to 0.");
+			// 
+			// analyteBox_setB
+			// 
+			this->analyteBox_setB->Enabled = false;
+			this->analyteBox_setB->Location = System::Drawing::Point(254, 219);
+			this->analyteBox_setB->Name = L"analyteBox_setB";
+			this->analyteBox_setB->Size = System::Drawing::Size(100, 20);
+			this->analyteBox_setB->TabIndex = 42;
+			this->toolTip1->SetToolTip(this->analyteBox_setB, L"Values below this threshold will be dropped to 0.");
+			// 
+			// setNumbersLabel
+			// 
+			this->setNumbersLabel->AutoSize = true;
+			this->setNumbersLabel->Enabled = false;
+			this->setNumbersLabel->Location = System::Drawing::Point(12, 224);
+			this->setNumbersLabel->Name = L"setNumbersLabel";
+			this->setNumbersLabel->Size = System::Drawing::Size(152, 13);
+			this->setNumbersLabel->TabIndex = 44;
+			this->setNumbersLabel->Text = L"Set A: 1st/2nd; Set B: 3rd/4th.";
+			this->toolTip1->SetToolTip(this->setNumbersLabel, L"3rd and 4th can be left blank; they will remain the same for set A.");
 			// 
 			// allWavelenghts
 			// 
@@ -273,7 +329,6 @@ namespace LIBSProcessing {
 			this->label5->Size = System::Drawing::Size(72, 13);
 			this->label5->TabIndex = 13;
 			this->label5->Text = L"Save location";
-			this->label5->Click += gcnew System::EventHandler(this, &Window::label5_Click_1);
 			// 
 			// savePath
 			// 
@@ -289,7 +344,7 @@ namespace LIBSProcessing {
 			this->nameOfFile->Name = L"nameOfFile";
 			this->nameOfFile->Size = System::Drawing::Size(143, 20);
 			this->nameOfFile->TabIndex = 15;
-			this->nameOfFile->Text = L"TEMP.asc";
+			this->nameOfFile->Text = L"TEMP.csv";
 			// 
 			// label6
 			// 
@@ -312,7 +367,7 @@ namespace LIBSProcessing {
 			// 
 			// fileSelect
 			// 
-			this->fileSelect->Location = System::Drawing::Point(415, 72);
+			this->fileSelect->Location = System::Drawing::Point(425, 93);
 			this->fileSelect->Name = L"fileSelect";
 			this->fileSelect->Size = System::Drawing::Size(75, 23);
 			this->fileSelect->TabIndex = 18;
@@ -323,7 +378,7 @@ namespace LIBSProcessing {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(241, 77);
+			this->label7->Location = System::Drawing::Point(251, 98);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(113, 13);
 			this->label7->TabIndex = 19;
@@ -342,7 +397,7 @@ namespace LIBSProcessing {
 			// noOfFiles
 			// 
 			this->noOfFiles->AutoSize = true;
-			this->noOfFiles->Location = System::Drawing::Point(412, 98);
+			this->noOfFiles->Location = System::Drawing::Point(422, 119);
 			this->noOfFiles->Name = L"noOfFiles";
 			this->noOfFiles->Size = System::Drawing::Size(80, 13);
 			this->noOfFiles->TabIndex = 21;
@@ -351,6 +406,7 @@ namespace LIBSProcessing {
 			// fileOpener
 			// 
 			this->fileOpener->FileName = L"Select your files...";
+			this->fileOpener->Filter = L"ASC files (*.asc)|*.asc";
 			this->fileOpener->Multiselect = true;
 			// 
 			// saveSelectedBox
@@ -358,7 +414,7 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->AutoSize = true;
 			this->saveSelectedBox->Checked = true;
 			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->saveSelectedBox->Location = System::Drawing::Point(12, 238);
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 244);
 			this->saveSelectedBox->Name = L"saveSelectedBox";
 			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
 			this->saveSelectedBox->TabIndex = 23;
@@ -418,7 +474,7 @@ namespace LIBSProcessing {
 			// cutoffLabel
 			// 
 			this->cutoffLabel->AutoSize = true;
-			this->cutoffLabel->Location = System::Drawing::Point(412, 111);
+			this->cutoffLabel->Location = System::Drawing::Point(422, 132);
 			this->cutoffLabel->Name = L"cutoffLabel";
 			this->cutoffLabel->Size = System::Drawing::Size(64, 13);
 			this->cutoffLabel->TabIndex = 32;
@@ -459,11 +515,102 @@ namespace LIBSProcessing {
 			this->calibrationToolStripMenuItem->Text = L"Calibration";
 			this->calibrationToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::calibrationToolStripMenuItem_Click);
 			// 
+			// setAlabel
+			// 
+			this->setAlabel->AutoSize = true;
+			this->setAlabel->Location = System::Drawing::Point(251, 85);
+			this->setAlabel->Name = L"setAlabel";
+			this->setAlabel->Size = System::Drawing::Size(36, 13);
+			this->setAlabel->TabIndex = 34;
+			this->setAlabel->Text = L"Set A:";
+			// 
+			// setBlabel
+			// 
+			this->setBlabel->AutoSize = true;
+			this->setBlabel->Enabled = false;
+			this->setBlabel->Location = System::Drawing::Point(251, 169);
+			this->setBlabel->Name = L"setBlabel";
+			this->setBlabel->Size = System::Drawing::Size(36, 13);
+			this->setBlabel->TabIndex = 39;
+			this->setBlabel->Text = L"Set B:";
+			// 
+			// cutoffLabel_setB
+			// 
+			this->cutoffLabel_setB->AutoSize = true;
+			this->cutoffLabel_setB->Enabled = false;
+			this->cutoffLabel_setB->Location = System::Drawing::Point(422, 216);
+			this->cutoffLabel_setB->Name = L"cutoffLabel_setB";
+			this->cutoffLabel_setB->Size = System::Drawing::Size(64, 13);
+			this->cutoffLabel_setB->TabIndex = 38;
+			this->cutoffLabel_setB->Text = L"at no cutoff.";
+			// 
+			// noOfFiles_setB
+			// 
+			this->noOfFiles_setB->AutoSize = true;
+			this->noOfFiles_setB->Enabled = false;
+			this->noOfFiles_setB->Location = System::Drawing::Point(422, 203);
+			this->noOfFiles_setB->Name = L"noOfFiles_setB";
+			this->noOfFiles_setB->Size = System::Drawing::Size(80, 13);
+			this->noOfFiles_setB->TabIndex = 37;
+			this->noOfFiles_setB->Text = L"files selected: 0";
+			// 
+			// selectFilesLabel_setB
+			// 
+			this->selectFilesLabel_setB->AutoSize = true;
+			this->selectFilesLabel_setB->Enabled = false;
+			this->selectFilesLabel_setB->Location = System::Drawing::Point(251, 182);
+			this->selectFilesLabel_setB->Name = L"selectFilesLabel_setB";
+			this->selectFilesLabel_setB->Size = System::Drawing::Size(113, 13);
+			this->selectFilesLabel_setB->TabIndex = 36;
+			this->selectFilesLabel_setB->Text = L"Select files to process:";
+			// 
+			// fileSelect_setB
+			// 
+			this->fileSelect_setB->Enabled = false;
+			this->fileSelect_setB->Location = System::Drawing::Point(425, 177);
+			this->fileSelect_setB->Name = L"fileSelect_setB";
+			this->fileSelect_setB->Size = System::Drawing::Size(75, 23);
+			this->fileSelect_setB->TabIndex = 35;
+			this->fileSelect_setB->Text = L"Browse...";
+			this->fileSelect_setB->UseVisualStyleBackColor = true;
+			this->fileSelect_setB->Click += gcnew System::EventHandler(this, &Window::fileSelect_setB_Click);
+			// 
+			// analyteLabel
+			// 
+			this->analyteLabel->AutoSize = true;
+			this->analyteLabel->Enabled = false;
+			this->analyteLabel->Location = System::Drawing::Point(251, 121);
+			this->analyteLabel->Name = L"analyteLabel";
+			this->analyteLabel->Size = System::Drawing::Size(143, 13);
+			this->analyteLabel->TabIndex = 41;
+			this->analyteLabel->Text = L"Analyte concentration - set A";
+			// 
+			// analyteLabel_setB
+			// 
+			this->analyteLabel_setB->AutoSize = true;
+			this->analyteLabel_setB->Enabled = false;
+			this->analyteLabel_setB->Location = System::Drawing::Point(251, 205);
+			this->analyteLabel_setB->Name = L"analyteLabel_setB";
+			this->analyteLabel_setB->Size = System::Drawing::Size(143, 13);
+			this->analyteLabel_setB->TabIndex = 43;
+			this->analyteLabel_setB->Text = L"Analyte concentration - set B";
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->setNumbersLabel);
+			this->Controls->Add(this->analyteLabel_setB);
+			this->Controls->Add(this->analyteBox_setB);
+			this->Controls->Add(this->analyteLabel);
+			this->Controls->Add(this->analyteBox);
+			this->Controls->Add(this->setBlabel);
+			this->Controls->Add(this->cutoffLabel_setB);
+			this->Controls->Add(this->noOfFiles_setB);
+			this->Controls->Add(this->selectFilesLabel_setB);
+			this->Controls->Add(this->fileSelect_setB);
+			this->Controls->Add(this->setAlabel);
 			this->Controls->Add(this->cutoffLabel);
 			this->Controls->Add(this->label9);
 			this->Controls->Add(this->label8);
@@ -494,7 +641,7 @@ namespace LIBSProcessing {
 			this->Controls->Add(this->menuStrip1);
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"Window";
-			this->Text = L"Window";
+			this->Text = L"Zeus";
 			this->Load += gcnew System::EventHandler(this, &Window::Window_Load);
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
@@ -509,19 +656,10 @@ namespace LIBSProcessing {
 
 		//CODE HANDLING THE UI & calls to the "backend".
 
-	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {//cleanup
-	}
-	private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {//cleanup
-	}
-	private: System::Void label5_Click(System::Object^ sender, System::EventArgs^ e) {//cleanup
-	}
-	private: System::Void label5_Click_1(System::Object^ sender, System::EventArgs^ e) {//cleanup
-	}
-
 	//GUI handler - submit an ELEMENT'S wavelengths to the list
 	private: System::Void elemSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
 
-
+		//TODO: database handling!
 
 	}
 	//GUI handler - submit custom wavelengths to the list
@@ -542,6 +680,7 @@ namespace LIBSProcessing {
 		//for some reason, it order to update the list in the GUI it needs to be fully reset
 		allWavelenghts->DataSource = nullptr;
 		allWavelenghts->DataSource = b.selectedWavelengths;
+		waveEdit->Text = "";
 
 	}
 
@@ -577,17 +716,71 @@ namespace LIBSProcessing {
 			MessageBox::Show("Error - range must be a float");
 			return;
 		}
-
-		b.getRequestedSpectra(option, range);
+		//Perform operations to retrieve division information 
+		if (calibrationToolStripMenuItem->Checked) {
+			b.getRequestedSpectraCalibrationMode();
+		}
+		//standard mode operation
+		else {
+			b.getRequestedSpectraStandardMode(option, range);
+		}
 	}
 
 	//GUI handler - save file
 	private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
-		b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked);
+		if (calibrationToolStripMenuItem->Checked) {
+			if(int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked) == 0){
+				MessageBox::Show("Error - file was unable to be saved with name " + b.nameOfFile);
+
+			}
+			else if (success == -1) {
+				MessageBox::Show("Error - one of the data structures has not been initialized. This most often happens if 'Process' has not been clicked. ");
+			}
+			else {
+				MessageBox::Show("File saved at " + b.directory + b.nameOfFile);
+			}
+		}
+		//standard mode saving.
+		else {
+			if (int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked) == 0) {
+
+			}
+			else if (success == -1) {
+				MessageBox::Show("Error - one of the data structures has not been initialized. This most often happens if 'Process' has not been clicked. ");
+			}
+			else {
+				MessageBox::Show("File saved at " + b.directory + b.nameOfFile);
+			}
+		}
+
+
 	}
 
 	//GUI handler - load the files into the system
 	private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
+		handleSelection(1);
+	}
+
+	 private: System::Void fileSelect_setB_Click(System::Object^ sender, System::EventArgs^ e) {
+		 handleSelection(2);
+	 }
+	private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
+	}
+
+private: System::Void standardToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+	setCalibrationGroup(true);
+
+}
+private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+	setCalibrationGroup(false);
+
+}	
+
+	/// <summary>
+	/// Helper functions, not to clutter the main UI code - mainly with a single switch
+	/// </summary>
+
+	private: void handleSelection(int selectionWindow) {
 		float cutoff;
 		//if loaded files successfully, 
 		if (fileOpener->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
@@ -606,32 +799,52 @@ namespace LIBSProcessing {
 				cutoff = -199;
 			}
 			//and process the files into the memory.
-			if (b.loadFiles(fileOpener->FileNames, cutoff)) {
-				noOfFiles->Text = "files selected: " + fileOpener->FileNames->Length;
-				if (cutoff == -199) {
-					cutoffLabel->Text = "at no cutoff. ";
+			if (b.loadFiles(fileOpener->FileNames, cutoff, selectionWindow)) {
+				if (selectionWindow == 1) {
+					noOfFiles->Text = "files selected: " + fileOpener->FileNames->Length;
+					if (cutoff == -199) {
+						cutoffLabel->Text = "at no cutoff. ";
+					}
+					else {
+						cutoffLabel->Text = "at cutoff: " + cutoff;
+					}
 				}
-				else {
-					cutoffLabel->Text = "at cutoff: " + cutoff;
+				else if (selectionWindow == 2) {
+					noOfFiles_setB->Text = "files selected: " + fileOpener->FileNames->Length;
+					if (cutoff == -199) {
+						cutoffLabel_setB->Text = "at no cutoff. ";
+					}
+					else {
+						cutoffLabel_setB->Text = "at cutoff: " + cutoff;
+					}
+
 				}
+
 			}
 			//very basic handling for now.
 			else {
 				noOfFiles->Text = "Error: one of the files is not an .asc file.";
 			}
 		}
-
 	}
-	private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
-	}
+	private: void setCalibrationGroup(bool value) {
+		standardToolStripMenuItem->Checked = value;
+		calibrationToolStripMenuItem->Checked = !value;
+		//setAlabel->Enabled = !value;
+		analyteLabel->Enabled = !value;
+		analyteBox->Enabled = !value;
+		setBlabel->Enabled = !value;
+		selectFilesLabel_setB->Enabled = !value;
+		analyteLabel_setB->Enabled = !value;
+		analyteBox_setB->Enabled = !value;
+		fileSelect_setB->Enabled = !value;
+		selectFilesLabel_setB->Enabled = !value;
+		noOfFiles_setB->Enabled = !value;
+		cutoffLabel_setB->Enabled = !value;
+		setNumbersLabel->Enabled = !value;
+		saveSelectedBox->Enabled = value;
 
-private: System::Void standardToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	standardToolStripMenuItem->Checked = true;
-	calibrationToolStripMenuItem->Checked = false;
-}
-private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	standardToolStripMenuItem->Checked = false;
-	calibrationToolStripMenuItem->Checked = true;
-}	
+		   }
+
 };
 }

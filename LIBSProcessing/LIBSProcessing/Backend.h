@@ -35,14 +35,19 @@ public:
 	List<int>^ userSelectionsIndexes;							//As dictionaries are unsorted, we need to keep track of the indexes as well.
 
 	
+	//Calibration mode variables.
+	List<String^>^ filesToExtract_B;
+	List<Dictionary<float, float>^>^ listOfDictionaries_B;
+	List<float>^ divisionAcrossA;								// divisions of two wavelengths across files.
+	List<float>^ divisionAcrossB;
+	float avgA, avgB;											//average values of two lists above.
 
 
 	Backend() {
 		directory = Application::StartupPath;
 		//for now.
-		nameOfFile = "default.txt";
+		nameOfFile = "default.csv";
 		//initialize the (now empty) dynamically allocated array.
-		filesToExtract = gcnew List<String^>();
 		selectedWavelengths = gcnew List<float>();
 	}
 
@@ -52,51 +57,151 @@ public:
 		if (name) {
 			nameOfFile = "\\"+name;
 		}
-		if (!name->EndsWith(".asc")) {
-			nameOfFile = nameOfFile + ".asc";
-		}
 		else {
-			//TODO: save a file with current date
+			nameOfFile = "\\"+System::DateTime::Now.ToString("dd_MM_hhmm");
 		}
-		//if o
-		Dictionary<float, float>^ whatToSave = selectedOnly ? presentToUserResult : result;
-		StreamWriter^ sw = gcnew StreamWriter(directory + nameOfFile);
-		//loop through all the keys
-		for each (float key in whatToSave->Keys) {
-			sw->Write(Convert::ToString(key));
-			sw->Write(',');
-			sw->Write(Convert::ToString(result[key]));
-			sw->Write('\n');
+		if (!name->EndsWith(".csv")) {
+			nameOfFile = nameOfFile + ".csv";
 		}
 
+		Dictionary<float, float>^ whatToSave = selectedOnly ? presentToUserResult : result;
+		StreamWriter^ sw;
+		try {
+			sw = gcnew StreamWriter(directory + nameOfFile);
+		}
+		catch (...) {
+			return 0;
+		}
+		//loop through all the keys
+		try {//TODO: this try-catch block doesn't work. I have no clue why.
+			for each (float key in whatToSave->Keys) {
+				sw->Write(Convert::ToString(key));
+				sw->Write(',');
+				sw->Write(Convert::ToString(result[key]));
+				sw->Write('\n');
+			}
+		}
+		catch (...) {
+			//data structure not initialized
+			return -1;
+		}
 		sw->Close();
-		//TODO: exception handling
+		return 1;
+	}
+	int saveToFileCalibration(String^ name, String^ analyteA, String^ analyteB) {
+		if (name) {
+			nameOfFile = "\\" + name;
+		}
+		else {
+			nameOfFile = "\\" + System::DateTime::Now.ToString("dd_MM_hhmm");
+		}
+		if (!name->EndsWith(".csv")) {
+			nameOfFile = nameOfFile + ".csv";
+		}
+		StreamWriter^ sw;
+		try {
+			sw = gcnew StreamWriter(directory + nameOfFile);
+		}
+		catch (...) {
+			return 0;
+		}
+		//write the header of the excel file.
+		try {
+
+			sw->Write("Divisions for acquisitions A, Average division value A, Concentration (ppm) A, dividend A, divisor A,");
+			sw->Write("Divisions for acquisitions B, Average division value B, Concentration (ppm) B,dividend B, divisor B\n");
+			//write the first row of the data.
+			sw->Write(Convert::ToString(divisionAcrossA[0])); sw->Write(",");
+			sw->Write(Convert::ToString(avgA)); sw->Write(",");
+			sw->Write(analyteA + ",");
+			sw->Write(Convert::ToString(userSelectionsToKeys[0])), sw->Write(",");
+			sw->Write(Convert::ToString(userSelectionsToKeys[1])); sw->Write(",");  //first row for A complete
+
+			sw->Write(Convert::ToString(divisionAcrossB[0])); sw->Write(",");
+			sw->Write(Convert::ToString(avgB)); sw->Write(",");
+			sw->Write(analyteB + ",");
+			if (userSelectionsToKeys->Count != 2) { sw->Write(Convert::ToString(userSelectionsToKeys[2])); }
+			else { sw->Write(Convert::ToString(userSelectionsToKeys[0])); }
+			sw->Write(",");
+			if (userSelectionsToKeys->Count != 2) { sw->Write(Convert::ToString(userSelectionsToKeys[3])); }
+			else { sw->Write(Convert::ToString(userSelectionsToKeys[1])); }
+			sw->Write("\n");
+		}
+		catch (...) {
+			//Data structures not initialized yet.
+			return -1;
+		}
+
+		//write the remaining rows of data.
+		int i = 1;
+		while (i < divisionAcrossA->Count || i < divisionAcrossB->Count) {
+			if (i < divisionAcrossA->Count) {
+				sw->Write(Convert::ToString(divisionAcrossA[i]));
+			}
+			sw->Write(",,,,,");
+			if (i < divisionAcrossB->Count) {
+				sw->Write(Convert::ToString(divisionAcrossB[i]));
+			}
+			sw->Write(",,,,\n");
+			i++;
+		}
+
+
+
+		sw->Close();
+
+
 		return 1;
 	}
 
-	int loadFiles(array<String^>^ fileNames, float cutoff) {
+	int loadFiles(array<String^>^ fileNames, float cutoff, int whichDictionary) {
+		List<String^>^ files;
+		if (whichDictionary == 1) {
+			//reinitialize the arrays each time.
+			filesToExtract = gcnew List<String^>();
+			//point to the relevant array.
+			files = filesToExtract;
+		}
+		else if(whichDictionary == 2){
+			filesToExtract_B = gcnew List<String^>();
+			files = filesToExtract_B;
+		}
+		else {
+			//this should never be reached.
+			files = gcnew List<String^>();
+			return 0;
+		}
 		for each (String^ filename in fileNames) {
 			if (filename->EndsWith(".asc")) {
-				filesToExtract->Add(filename);
+				files->Add(filename);
 			}
 			else {
 				return 0;
 			}
 		}
-		initializeMemoryFiles(cutoff);
+		return initializeMemoryFiles(cutoff, whichDictionary);
 
-		return 1;
 	}
 
 	//function to be called by the UI to process the dictionary as per our selected wavelengths.
 	//option values:	1 - find highest peak within range
 	//					2 - sum all datapoints within range
-	int getRequestedSpectra(int option, float range) {
+	int getRequestedSpectraStandardMode(int option, float range) {
 		//first, keys CLOSEST to the value that the user input must be found.
 		findKeys();
 		findRequestedValues(option, range);
 		return 1;
+	}
 
+	int getRequestedSpectraCalibrationMode() {
+		//we either ha ve just 2 values; or more than 3. Any values besides 0,1,2,3 will be discarded.
+		if (selectedWavelengths->Count < 2 || selectedWavelengths->Count == 3) {
+			return 0;
+		}
+		//first, keys CLOSEST to the value that the user input must be found.
+		findKeys();
+		findDivisionValues();
+		return 1;
 	}
 
 	int getAveragedSpectra() {
@@ -162,22 +267,40 @@ private:
 	//we have 10*26606 *8 = 2128480B = 2078 KiB = around 2MiB. All is good.
 	//Depending on the version of the programme, data will be double instead of float, so 4MiB.
 
-	int initializeMemoryFiles(float cutoff) {
-		int lengthOfListOfMaps = filesToExtract->Count;
-		//allocating memory so that the array does not need resizing
-		listOfDictionaries = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
+	int initializeMemoryFiles(float cutoff, int whichDictionary) {
+		List<String^>^ files;
+		int lengthOfListOfMaps;
+		List<Dictionary<float, float>^>^ currentListOfDictionaries;
+		if (whichDictionary == 1) {
+			////allocating memory so that the array does not need resizing
+			listOfDictionaries = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
+			//point to the relevant array.
+			currentListOfDictionaries = listOfDictionaries;
+			files = filesToExtract;
+			lengthOfListOfMaps = filesToExtract->Count;
+		}
+		else if (whichDictionary == 2) {
+			listOfDictionaries_B = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
+			currentListOfDictionaries = listOfDictionaries_B;
+			files = filesToExtract_B;
+			lengthOfListOfMaps = filesToExtract_B->Count;
+		}
+		else {
+			//this should never be reached.
+			currentListOfDictionaries = gcnew List<Dictionary<float, float>^>();
+			return 0;
+		}
 		//create and populate a dictionary of data for each of the files.
 		for (int i = 0; i < lengthOfListOfMaps; i++) {
-			listOfDictionaries->Add(gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP));
-			processFileIntoDictionary(listOfDictionaries[i], filesToExtract[i], cutoff);
+			currentListOfDictionaries->Add(gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP));
+			processFileIntoDictionary(currentListOfDictionaries[i], files[i], cutoff);
 		}
 		return 1;
 	}
 
 	//sum all our dictionaries into one resulting dictionary. This can be useful when we want to see the strongest peaks across n files.
 	int sumDictionaries() {
-		//TODO - check if the dictionary isn't already created.
-		//Shouldn't be that big of a deal however because automated garbage collection.
+		//Even if there was a dictionary before, garbage collect it and create a new one.
 		result = gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP);
 		indexedKeys = gcnew List<float>(DATASIZE - LINESTOSKIP);
 		if (listOfDictionaries == nullptr) {
@@ -205,10 +328,11 @@ private:
 	//find keys for user-supplied values. This was probably the trickiest part of the design to get a good time complexity.
 	//It fills the dictionary that's self-contained.
 	int findKeys() {
-		if (userSelectionsToKeys == nullptr) {
+		//if (userSelectionsToKeys == nullptr) {
+		//every time we process again; we reset the list - easier to handle
 			userSelectionsToKeys = gcnew List<float>();
 			userSelectionsIndexes = gcnew List<int>();
-		}
+		//}
 
 		for each (float wavelength in selectedWavelengths) {
 			//guesstimate the index based the distances of the datapoints.
@@ -221,6 +345,7 @@ private:
 			float tempDiff, newDiff;
 			if (indexedKeys[assumedIndex] == wavelength) {
 				userSelectionsToKeys->Add(wavelength);
+				userSelectionsIndexes->Add(assumedIndex);
 				continue;
 			}
 			//2. We have estmimated the key to be too large. Try a lower key one by one.
@@ -266,9 +391,10 @@ private:
 
 	//Find the results in a provided range.
 	int findRequestedValues(int option, float range) {
-		float rangeEachWay = range / 2;
-		if (option == 2) { option = 0; }	//TODO clean this up
-		float tempResult = option ? -9999 : 0;
+		//reset the "presentToUser" dictionary.
+		presentToUserResult = gcnew Dictionary<float, float>();
+		float rangeEachWay = range / 2, tempResult;
+		if (option == 2) { tempResult = 0;} else { tempResult = -9999; }
 		float currKey;
 		int index;
 		int i = 0;
@@ -311,6 +437,43 @@ private:
 
 		}
 		return 1;
+	}
+
+
+	//find the division values and save them to an array. Function to be called after there are at least 2 
+	//keys selected by the user.
+	int findDivisionValues() {
+		divisionAcrossA = gcnew List<float>(listOfDictionaries->Count);
+		divisionAcrossB = gcnew List<float>(listOfDictionaries_B->Count);
+		float divisorA, divisorB, dividendA, dividendB;
+		if (userSelectionsToKeys->Count == 2) {
+			divisorA = divisorB = userSelectionsToKeys[1];
+			dividendA = dividendB = userSelectionsToKeys[0];
+		}
+		else {
+			divisorA = userSelectionsToKeys[1];
+			dividendA = userSelectionsToKeys[0];
+			divisorB = userSelectionsToKeys[3];
+			dividendB = userSelectionsToKeys[2];
+		}
+		float runningSum = 0, res;
+		//first, handle the first dictionary.
+		for each (Dictionary<float, float> ^ dict in listOfDictionaries) {
+			res = dict[dividendA] / dict[divisorA];
+			divisionAcrossA->Add(res);
+			runningSum += res;
+		}
+		avgA = runningSum / listOfDictionaries->Count;
+		//then the other one.
+		runningSum = 0;
+		for each (Dictionary<float, float> ^ dict in listOfDictionaries_B) {
+			res = dict[dividendB] / dict[divisorB];
+			divisionAcrossB->Add(res);
+			runningSum += res;
+		}
+		avgB = runningSum / listOfDictionaries->Count;
+		return 1;
+
 	}
 	
 
