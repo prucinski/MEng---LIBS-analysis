@@ -4,9 +4,9 @@ C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(153,71): warning C4244: 'argumen
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(153,32): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(218,21): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(271,20): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(486,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(513,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(527,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(554,32): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(535,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(562,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(576,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(603,32): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Window.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
   LIBSProcessing.vcxproj -> C:\MEng\LIBSProcessing\Debug\LIBSProcessing.exe

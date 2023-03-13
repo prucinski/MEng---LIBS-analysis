@@ -32,6 +32,10 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::Label^ label8;
 	private: System::Windows::Forms::Label^ label9;
 	private: System::Windows::Forms::Label^ cutoffLabel;
+	private: System::Windows::Forms::MenuStrip^ menuStrip1;
+	private: System::Windows::Forms::ToolStripMenuItem^ modeToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ standardToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^ calibrationToolStripMenuItem;
 
 
 
@@ -134,13 +138,18 @@ namespace LIBSProcessing {
 			this->label8 = (gcnew System::Windows::Forms::Label());
 			this->label9 = (gcnew System::Windows::Forms::Label());
 			this->cutoffLabel = (gcnew System::Windows::Forms::Label());
+			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+			this->modeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->standardToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->calibrationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->groupBox1->SuspendLayout();
+			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(12, 16);
+			this->label1->Location = System::Drawing::Point(12, 24);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(194, 13);
 			this->label1->TabIndex = 1;
@@ -149,14 +158,14 @@ namespace LIBSProcessing {
 			// 
 			// waveEdit
 			// 
-			this->waveEdit->Location = System::Drawing::Point(12, 88);
+			this->waveEdit->Location = System::Drawing::Point(12, 96);
 			this->waveEdit->Name = L"waveEdit";
 			this->waveEdit->Size = System::Drawing::Size(100, 20);
 			this->waveEdit->TabIndex = 2;
 			// 
 			// waveSubmit
 			// 
-			this->waveSubmit->Location = System::Drawing::Point(133, 85);
+			this->waveSubmit->Location = System::Drawing::Point(133, 93);
 			this->waveSubmit->Name = L"waveSubmit";
 			this->waveSubmit->Size = System::Drawing::Size(75, 23);
 			this->waveSubmit->TabIndex = 3;
@@ -167,7 +176,7 @@ namespace LIBSProcessing {
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(9, 69);
+			this->label2->Location = System::Drawing::Point(9, 77);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(89, 13);
 			this->label2->TabIndex = 4;
@@ -176,7 +185,7 @@ namespace LIBSProcessing {
 			// 
 			// elemSubmit
 			// 
-			this->elemSubmit->Location = System::Drawing::Point(133, 35);
+			this->elemSubmit->Location = System::Drawing::Point(133, 43);
 			this->elemSubmit->Name = L"elemSubmit";
 			this->elemSubmit->Size = System::Drawing::Size(75, 23);
 			this->elemSubmit->TabIndex = 5;
@@ -187,7 +196,7 @@ namespace LIBSProcessing {
 			// elemDropdown
 			// 
 			this->elemDropdown->FormattingEnabled = true;
-			this->elemDropdown->Location = System::Drawing::Point(12, 35);
+			this->elemDropdown->Location = System::Drawing::Point(12, 43);
 			this->elemDropdown->MaxDropDownItems = 100;
 			this->elemDropdown->Name = L"elemDropdown";
 			this->elemDropdown->Size = System::Drawing::Size(100, 21);
@@ -195,7 +204,7 @@ namespace LIBSProcessing {
 			// 
 			// rangeInput
 			// 
-			this->rangeInput->Location = System::Drawing::Point(12, 143);
+			this->rangeInput->Location = System::Drawing::Point(12, 151);
 			this->rangeInput->Name = L"rangeInput";
 			this->rangeInput->Size = System::Drawing::Size(100, 20);
 			this->rangeInput->TabIndex = 6;
@@ -204,7 +213,7 @@ namespace LIBSProcessing {
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(9, 127);
+			this->label3->Location = System::Drawing::Point(9, 135);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(118, 13);
 			this->label3->TabIndex = 7;
@@ -212,7 +221,7 @@ namespace LIBSProcessing {
 			// 
 			// noiseCutoff
 			// 
-			this->noiseCutoff->Location = System::Drawing::Point(254, 38);
+			this->noiseCutoff->Location = System::Drawing::Point(254, 46);
 			this->noiseCutoff->Name = L"noiseCutoff";
 			this->noiseCutoff->Size = System::Drawing::Size(100, 20);
 			this->noiseCutoff->TabIndex = 29;
@@ -221,7 +230,7 @@ namespace LIBSProcessing {
 			// allWavelenghts
 			// 
 			this->allWavelenghts->FormattingEnabled = true;
-			this->allWavelenghts->Location = System::Drawing::Point(12, 190);
+			this->allWavelenghts->Location = System::Drawing::Point(12, 198);
 			this->allWavelenghts->MaxDropDownItems = 100;
 			this->allWavelenghts->Name = L"allWavelenghts";
 			this->allWavelenghts->Size = System::Drawing::Size(100, 21);
@@ -230,7 +239,7 @@ namespace LIBSProcessing {
 			// label4
 			// 
 			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(9, 174);
+			this->label4->Location = System::Drawing::Point(9, 182);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(154, 13);
 			this->label4->TabIndex = 10;
@@ -238,7 +247,7 @@ namespace LIBSProcessing {
 			// 
 			// removeWave
 			// 
-			this->removeWave->Location = System::Drawing::Point(133, 190);
+			this->removeWave->Location = System::Drawing::Point(133, 198);
 			this->removeWave->Name = L"removeWave";
 			this->removeWave->Size = System::Drawing::Size(75, 23);
 			this->removeWave->TabIndex = 11;
@@ -248,7 +257,7 @@ namespace LIBSProcessing {
 			// 
 			// saveFolderSelect
 			// 
-			this->saveFolderSelect->Location = System::Drawing::Point(415, 140);
+			this->saveFolderSelect->Location = System::Drawing::Point(303, 378);
 			this->saveFolderSelect->Name = L"saveFolderSelect";
 			this->saveFolderSelect->Size = System::Drawing::Size(75, 23);
 			this->saveFolderSelect->TabIndex = 12;
@@ -259,7 +268,7 @@ namespace LIBSProcessing {
 			// label5
 			// 
 			this->label5->AutoSize = true;
-			this->label5->Location = System::Drawing::Point(241, 126);
+			this->label5->Location = System::Drawing::Point(129, 364);
 			this->label5->Name = L"label5";
 			this->label5->Size = System::Drawing::Size(72, 13);
 			this->label5->TabIndex = 13;
@@ -268,7 +277,7 @@ namespace LIBSProcessing {
 			// 
 			// savePath
 			// 
-			this->savePath->Location = System::Drawing::Point(244, 143);
+			this->savePath->Location = System::Drawing::Point(132, 381);
 			this->savePath->Name = L"savePath";
 			this->savePath->ReadOnly = true;
 			this->savePath->Size = System::Drawing::Size(143, 20);
@@ -276,7 +285,7 @@ namespace LIBSProcessing {
 			// 
 			// nameOfFile
 			// 
-			this->nameOfFile->Location = System::Drawing::Point(170, 376);
+			this->nameOfFile->Location = System::Drawing::Point(180, 429);
 			this->nameOfFile->Name = L"nameOfFile";
 			this->nameOfFile->Size = System::Drawing::Size(143, 20);
 			this->nameOfFile->TabIndex = 15;
@@ -285,7 +294,7 @@ namespace LIBSProcessing {
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(193, 360);
+			this->label6->Location = System::Drawing::Point(203, 413);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(104, 13);
 			this->label6->TabIndex = 16;
@@ -293,7 +302,7 @@ namespace LIBSProcessing {
 			// 
 			// saveToFile
 			// 
-			this->saveToFile->Location = System::Drawing::Point(205, 402);
+			this->saveToFile->Location = System::Drawing::Point(215, 455);
 			this->saveToFile->Name = L"saveToFile";
 			this->saveToFile->Size = System::Drawing::Size(75, 23);
 			this->saveToFile->TabIndex = 17;
@@ -303,7 +312,7 @@ namespace LIBSProcessing {
 			// 
 			// fileSelect
 			// 
-			this->fileSelect->Location = System::Drawing::Point(415, 64);
+			this->fileSelect->Location = System::Drawing::Point(415, 72);
 			this->fileSelect->Name = L"fileSelect";
 			this->fileSelect->Size = System::Drawing::Size(75, 23);
 			this->fileSelect->TabIndex = 18;
@@ -314,7 +323,7 @@ namespace LIBSProcessing {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(241, 69);
+			this->label7->Location = System::Drawing::Point(241, 77);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(113, 13);
 			this->label7->TabIndex = 19;
@@ -322,7 +331,7 @@ namespace LIBSProcessing {
 			// 
 			// preview
 			// 
-			this->preview->Location = System::Drawing::Point(196, 290);
+			this->preview->Location = System::Drawing::Point(196, 298);
 			this->preview->Name = L"preview";
 			this->preview->Size = System::Drawing::Size(108, 21);
 			this->preview->TabIndex = 20;
@@ -333,7 +342,7 @@ namespace LIBSProcessing {
 			// noOfFiles
 			// 
 			this->noOfFiles->AutoSize = true;
-			this->noOfFiles->Location = System::Drawing::Point(412, 90);
+			this->noOfFiles->Location = System::Drawing::Point(412, 98);
 			this->noOfFiles->Name = L"noOfFiles";
 			this->noOfFiles->Size = System::Drawing::Size(80, 13);
 			this->noOfFiles->TabIndex = 21;
@@ -349,7 +358,7 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->AutoSize = true;
 			this->saveSelectedBox->Checked = true;
 			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->saveSelectedBox->Location = System::Drawing::Point(12, 230);
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 238);
 			this->saveSelectedBox->Name = L"saveSelectedBox";
 			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
 			this->saveSelectedBox->TabIndex = 23;
@@ -367,7 +376,6 @@ namespace LIBSProcessing {
 			this->highestCheckbox->TabStop = true;
 			this->highestCheckbox->Text = L"Highest in range";
 			this->highestCheckbox->UseVisualStyleBackColor = true;
-			this->highestCheckbox->CheckedChanged += gcnew System::EventHandler(this, &Window::highestCheckbox_CheckedChanged);
 			// 
 			// sumCheckbox
 			// 
@@ -378,13 +386,12 @@ namespace LIBSProcessing {
 			this->sumCheckbox->TabIndex = 27;
 			this->sumCheckbox->Text = L"Sum in range";
 			this->sumCheckbox->UseVisualStyleBackColor = true;
-			this->sumCheckbox->CheckedChanged += gcnew System::EventHandler(this, &Window::sumCheckbox_CheckedChanged);
 			// 
 			// groupBox1
 			// 
 			this->groupBox1->Controls->Add(this->highestCheckbox);
 			this->groupBox1->Controls->Add(this->sumCheckbox);
-			this->groupBox1->Location = System::Drawing::Point(132, 122);
+			this->groupBox1->Location = System::Drawing::Point(132, 130);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(103, 49);
 			this->groupBox1->TabIndex = 28;
@@ -393,7 +400,7 @@ namespace LIBSProcessing {
 			// label8
 			// 
 			this->label8->AutoSize = true;
-			this->label8->Location = System::Drawing::Point(251, 19);
+			this->label8->Location = System::Drawing::Point(251, 27);
 			this->label8->Name = L"label8";
 			this->label8->Size = System::Drawing::Size(192, 13);
 			this->label8->TabIndex = 30;
@@ -402,7 +409,7 @@ namespace LIBSProcessing {
 			// label9
 			// 
 			this->label9->AutoSize = true;
-			this->label9->Location = System::Drawing::Point(374, 41);
+			this->label9->Location = System::Drawing::Point(374, 49);
 			this->label9->Name = L"label9";
 			this->label9->Size = System::Drawing::Size(126, 13);
 			this->label9->TabIndex = 31;
@@ -411,11 +418,46 @@ namespace LIBSProcessing {
 			// cutoffLabel
 			// 
 			this->cutoffLabel->AutoSize = true;
-			this->cutoffLabel->Location = System::Drawing::Point(412, 103);
+			this->cutoffLabel->Location = System::Drawing::Point(412, 111);
 			this->cutoffLabel->Name = L"cutoffLabel";
-			this->cutoffLabel->Size = System::Drawing::Size(73, 13);
+			this->cutoffLabel->Size = System::Drawing::Size(64, 13);
 			this->cutoffLabel->TabIndex = 32;
-			this->cutoffLabel->Text = L"at cutoff: -199";
+			this->cutoffLabel->Text = L"at no cutoff.";
+			// 
+			// menuStrip1
+			// 
+			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->modeToolStripMenuItem });
+			this->menuStrip1->Location = System::Drawing::Point(0, 0);
+			this->menuStrip1->Name = L"menuStrip1";
+			this->menuStrip1->Size = System::Drawing::Size(519, 24);
+			this->menuStrip1->TabIndex = 33;
+			this->menuStrip1->Text = L"menuStrip1";
+			// 
+			// modeToolStripMenuItem
+			// 
+			this->modeToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->standardToolStripMenuItem,
+					this->calibrationToolStripMenuItem
+			});
+			this->modeToolStripMenuItem->Name = L"modeToolStripMenuItem";
+			this->modeToolStripMenuItem->Size = System::Drawing::Size(50, 20);
+			this->modeToolStripMenuItem->Text = L"Mode";
+			// 
+			// standardToolStripMenuItem
+			// 
+			this->standardToolStripMenuItem->Checked = true;
+			this->standardToolStripMenuItem->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->standardToolStripMenuItem->Name = L"standardToolStripMenuItem";
+			this->standardToolStripMenuItem->Size = System::Drawing::Size(132, 22);
+			this->standardToolStripMenuItem->Text = L"Standard";
+			this->standardToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::standardToolStripMenuItem_Click);
+			// 
+			// calibrationToolStripMenuItem
+			// 
+			this->calibrationToolStripMenuItem->Name = L"calibrationToolStripMenuItem";
+			this->calibrationToolStripMenuItem->Size = System::Drawing::Size(132, 22);
+			this->calibrationToolStripMenuItem->Text = L"Calibration";
+			this->calibrationToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::calibrationToolStripMenuItem_Click);
 			// 
 			// Window
 			// 
@@ -449,11 +491,15 @@ namespace LIBSProcessing {
 			this->Controls->Add(this->waveEdit);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->elemDropdown);
+			this->Controls->Add(this->menuStrip1);
+			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"Window";
 			this->Text = L"Window";
 			this->Load += gcnew System::EventHandler(this, &Window::Window_Load);
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
+			this->menuStrip1->ResumeLayout(false);
+			this->menuStrip1->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -562,7 +608,12 @@ namespace LIBSProcessing {
 			//and process the files into the memory.
 			if (b.loadFiles(fileOpener->FileNames, cutoff)) {
 				noOfFiles->Text = "files selected: " + fileOpener->FileNames->Length;
-				cutoffLabel->Text = "at cutoff: " + cutoff;
+				if (cutoff == -199) {
+					cutoffLabel->Text = "at no cutoff. ";
+				}
+				else {
+					cutoffLabel->Text = "at cutoff: " + cutoff;
+				}
 			}
 			//very basic handling for now.
 			else {
@@ -573,12 +624,14 @@ namespace LIBSProcessing {
 	}
 	private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
-	//GUI handlers for the two checkbox for range controls.
-	private: System::Void highestCheckbox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 
-	};
-	private: System::Void sumCheckbox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-
-	}
+private: System::Void standardToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+	standardToolStripMenuItem->Checked = true;
+	calibrationToolStripMenuItem->Checked = false;
+}
+private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+	standardToolStripMenuItem->Checked = false;
+	calibrationToolStripMenuItem->Checked = true;
+}	
 };
 }
