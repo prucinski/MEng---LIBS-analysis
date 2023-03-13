@@ -1,13 +1,12 @@
 ﻿  Window.cpp
-C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(84,21): warning C4101: 'NullReferenceExceptionNullReferenceException': unreferenced local variable
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(255,32): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(258,71): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(258,32): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(342,21): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(670,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(698,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(712,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(793,32): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(673,41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(701,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(715,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\MEng\LIBSProcessing\LIBSProcessing\Window.h(796,32): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\MEng\LIBSProcessing\LIBSProcessing\Backend.h(276): warning C4700: uninitialized local variable 'lengthOfListOfMaps' used
   Window.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
   LIBSProcessing.vcxproj -> C:\MEng\LIBSProcessing\Debug\LIBSProcessing.exe

@@ -482,6 +482,7 @@ namespace LIBSProcessing {
 			// 
 			// menuStrip1
 			// 
+			this->menuStrip1->BackColor = System::Drawing::SystemColors::ButtonShadow;
 			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->modeToolStripMenuItem });
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
@@ -491,6 +492,8 @@ namespace LIBSProcessing {
 			// 
 			// modeToolStripMenuItem
 			// 
+			this->modeToolStripMenuItem->BackColor = System::Drawing::SystemColors::Control;
+			this->modeToolStripMenuItem->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Center;
 			this->modeToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
 				this->standardToolStripMenuItem,
 					this->calibrationToolStripMenuItem
@@ -504,14 +507,14 @@ namespace LIBSProcessing {
 			this->standardToolStripMenuItem->Checked = true;
 			this->standardToolStripMenuItem->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->standardToolStripMenuItem->Name = L"standardToolStripMenuItem";
-			this->standardToolStripMenuItem->Size = System::Drawing::Size(132, 22);
+			this->standardToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->standardToolStripMenuItem->Text = L"Standard";
 			this->standardToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::standardToolStripMenuItem_Click);
 			// 
 			// calibrationToolStripMenuItem
 			// 
 			this->calibrationToolStripMenuItem->Name = L"calibrationToolStripMenuItem";
-			this->calibrationToolStripMenuItem->Size = System::Drawing::Size(132, 22);
+			this->calibrationToolStripMenuItem->Size = System::Drawing::Size(180, 22);
 			this->calibrationToolStripMenuItem->Text = L"Calibration";
 			this->calibrationToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::calibrationToolStripMenuItem_Click);
 			// 
