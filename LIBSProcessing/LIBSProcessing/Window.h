@@ -732,27 +732,30 @@ namespace LIBSProcessing {
 	//GUI handler - save file
 	private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (calibrationToolStripMenuItem->Checked) {
-			if(int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked) == 0){
+			int success = b.saveToFileCalibration(nameOfFile->Text, analyteBox->Text, analyteBox_setB->Text);
+			if(success == 0){
 				MessageBox::Show("Error - file was unable to be saved with name " + b.nameOfFile);
 
 			}
-			else if (success == -1) {
-				MessageBox::Show("Error - one of the data structures has not been initialized. This most often happens if 'Process' has not been clicked. ");
-			}
-			else {
+			else if (success == 1) {
 				MessageBox::Show("File saved at " + b.directory + b.nameOfFile);
+			}
+			else{
+				MessageBox::Show("Error - one of the data structures has not been initialized. This most often happens if 'Process' has not been clicked. ");
 			}
 		}
 		//standard mode saving.
 		else {
-			if (int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked) == 0) {
+			int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked);
+			if (success == 0) {
+				MessageBox::Show("Error - file was unable to be saved with name " + b.nameOfFile);
+			}
 
-			}
-			else if (success == -1) {
-				MessageBox::Show("Error - one of the data structures has not been initialized. This most often happens if 'Process' has not been clicked. ");
-			}
-			else {
+			else if (success == 1) {
 				MessageBox::Show("File saved at " + b.directory + b.nameOfFile);
+			}
+			else{
+				MessageBox::Show("Error - one of the data structures has not been initialized. This most often happens if 'Process' has not been clicked. ");
 			}
 		}
 

@@ -73,7 +73,7 @@ public:
 			return 0;
 		}
 		//loop through all the keys
-		try {//TODO: this try-catch block doesn't work. I have no clue why.
+		try {
 			for each (float key in whatToSave->Keys) {
 				sw->Write(Convert::ToString(key));
 				sw->Write(',');
@@ -83,6 +83,7 @@ public:
 		}
 		catch (...) {
 			//data structure not initialized
+			sw->Close();
 			return -1;
 		}
 		sw->Close();
@@ -129,6 +130,7 @@ public:
 		}
 		catch (...) {
 			//Data structures not initialized yet.
+			sw->Close();
 			return -1;
 		}
 
