@@ -38,13 +38,12 @@ public:
 	//Calibration mode variables.
 	List<String^>^ filesToExtract_B;
 	List<Dictionary<float, float>^>^ listOfDictionaries_B;
-	List<float>^ divisionAcrossA;								// divisions of two wavelengths across files.
-	List<float>^ divisionAcrossB;
-	float avgA, avgB;											//average values of two lists above.
 
 	//multi-set processing.
 	List<String^>^ metadata;
 	List< List<Dictionary<float, float>^>^>^ listOfSets;
+	List<float>^ listOfConcentrations;
+	List<float>^ listOfAverages;
 
 
 	Backend() {
@@ -112,7 +111,7 @@ public:
 		}
 		//write the header of the excel file.
 		try {
-
+			/* OBSOLETE CODE - REMOVE WHEN SURE - TODO
 			sw->Write("Divisions for acquisitions A, Average division value A, Concentration (ppm) A, dividend A, divisor A,");
 			sw->Write("Divisions for acquisitions B, Average division value B, Concentration (ppm) B,dividend B, divisor B\n");
 			//write the first row of the data.
@@ -131,6 +130,36 @@ public:
 			if (userSelectionsToKeys->Count != 2) { sw->Write(Convert::ToString(userSelectionsToKeys[3])); }
 			else { sw->Write(Convert::ToString(userSelectionsToKeys[1])); }
 			sw->Write("\n");
+			*/
+			int elems = numberOfValidSets(); int whichKey = 0;
+			bool differentDivisors = false;
+			if (userSelectionsToKeys->Count / 2 == elems) {
+				differentDivisors = true;
+			}
+			//write headers
+			sw->Write(",Average from division,");
+			sw->Write("dividend,");
+			sw->Write("divisor,");
+			sw->Write("Concentration\n");
+			for (int i = 0; i < metadata->Count; i++) {
+				//coded for "no set input"
+				sw->Write("S" + Convert::ToString(i + 1) + ",");
+				if (listOfAverages[i] == -1) {
+					sw->Write(",,,");
+					continue;
+				}
+				sw->Write(Convert::ToString(listOfAverages[i])+",");
+				if (differentDivisors) {
+					sw->Write(Convert::ToString(userSelectionsToKeys[whichKey]) +",");
+					sw->Write(Convert::ToString(userSelectionsToKeys[whichKey+1])+",");
+					whichKey+=2;
+				}
+				else {
+					sw->Write(Convert::ToString(userSelectionsToKeys[0])+",");
+					sw->Write(Convert::ToString(userSelectionsToKeys[1])+",");
+				}
+				sw->Write(Convert::ToString(listOfConcentrations[i])+"\n");
+			}
 		}
 		catch (...) {
 			//Data structures not initialized yet.
@@ -138,7 +167,8 @@ public:
 			return -1;
 		}
 
-		//write the remaining rows of data.
+		/*OBSOLETE CODE - TO REMOVE - TODO
+		* 
 		int i = 1;
 		while (i < divisionAcrossA->Count || i < divisionAcrossB->Count) {
 			if (i < divisionAcrossA->Count) {
@@ -151,6 +181,7 @@ public:
 			sw->Write(",,,,\n");
 			i++;
 		}
+		*/
 
 
 
@@ -191,17 +222,29 @@ public:
 
 	int initializeSets(int length) {
 		metadata = gcnew List <String^>(length);
+		listOfSets = gcnew List< List<Dictionary<float, float>^>^>(length);
+		listOfConcentrations = gcnew List<float>(length);
+		listOfAverages = gcnew List<float>(length);
 
 		for (int i = 0; i < length; i++) {
 			metadata->Add(Convert::ToString(i+1)+ ". THIS SET IS EMPTY.");
+			//I'd like these structures to be index-addressable after they have been initialized.
+			listOfSets->Add(nullptr);
+			listOfConcentrations->Add(-1);
+			listOfAverages->Add(-1);
+
 		}
 
 		return 1;
 
 	}
 
-	int addSetToSets(int concentration, int index) {
-
+	int addSetToSets(float concentration, int index, float cutoff) {
+		listOfConcentrations[index] = concentration;
+		listOfSets[index] = gcnew List<Dictionary<float, float>^>();
+		listOfSets[index]->AddRange(listOfDictionaries_B);
+		metadata[index] = Convert::ToString(index + 1) + ".SET: " + listOfDictionaries_B->Count + " FILES, CUTOFF " +
+			cutoff + ", CONT." + concentration;
 		return 1;
 	}
 
@@ -216,8 +259,8 @@ public:
 	}
 
 	int getRequestedSpectraCalibrationMode() {
-		//we either ha ve just 2 values; or more than 3. Any values besides 0,1,2,3 will be discarded.
-		if (selectedWavelengths->Count < 2 || selectedWavelengths->Count == 3) {
+		//if we have less than 2 items, discard. We will check for whether each set has it's own wavelengths later.
+		if (selectedWavelengths->Count < 2) {
 			return 0;
 		}
 		//first, keys CLOSEST to the value that the user input must be found.
@@ -273,11 +316,11 @@ private:
 			//split line into two strings
 			thisKeyValArray = line->Split(',', 2);
 			//and add to the dictionary.
-			if (Convert::ToDouble(thisKeyValArray[1]) < cutoff) {
-				dict->Add(Convert::ToDouble(thisKeyValArray[0]), 0);
+			if (Convert::ToSingle(thisKeyValArray[1]) < cutoff) {
+				dict->Add(Convert::ToSingle(thisKeyValArray[0]), 0);
 			}
 			else {
-				dict->Add(Convert::ToDouble(thisKeyValArray[0]), Convert::ToDouble(thisKeyValArray[1]));
+				dict->Add(Convert::ToSingle(thisKeyValArray[0]), Convert::ToSingle(thisKeyValArray[1]));
 			}
 
 		}
@@ -323,12 +366,14 @@ private:
 	}
 
 	//sum all our dictionaries into one resulting dictionary. This can be useful when we want to see the strongest peaks across n files.
+	//this function also initializes indexed keys, which are crucial for O(1) operation.
 	int sumDictionaries() {
 		//Even if there was a dictionary before, garbage collect it and create a new one.
 		result = gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP);
 		indexedKeys = gcnew List<float>(DATASIZE - LINESTOSKIP);
 		if (listOfDictionaries == nullptr) {
-			return 0;
+			//in case user is operating in mode B.
+			listOfDictionaries = listOfDictionaries_B;
 		}
 
 		for each (float key in listOfDictionaries[0]->Keys) {
@@ -363,7 +408,7 @@ private:
 			//A line of best fit that maps index to wavelength is y = 201.96*e^(6*10^-5*x), as per Excel.
 			//I have modified it slightly after manually inspecting the mappings, and the formula for loosely recovering
 			//the index is presented below.
-			int assumedIndex = Math::Floor(Math::Pow(10, 5) / 6.21 * Math::Log(wavelength / 200.9381));
+			int assumedIndex = Convert::ToInt32(Math::Floor(Math::Pow(10, 5) / 6.21 * Math::Log(wavelength / 200.9381)));
 			//now, see and compare. This is heavily amortized computationally, and will not go over more than 200 iterations for each point.
 			//1.Rarest scenario. We have estimated exactly the correct key
 			float tempDiff, newDiff;
@@ -463,10 +508,25 @@ private:
 		return 1;
 	}
 
+	//Count how many non-null elements there are in the sets
+	//Example: user supplies 4 values of wavelengths.
+	//However, user also claims there are 3 sets to process - but user only submitted to 
+	//set 1 and 3. This code works around tha
+	int numberOfValidSets() {
+		int elems = 0;
+		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
+			if (set != nullptr) { elems++; }
+		}
+		return elems;
+	}
+
 
 	//find the division values and save them to an array. Function to be called after there are at least 2 
 	//keys selected by the user.
 	int findDivisionValues() {
+
+		/** OBSOLETE CODE, WILL REMOVE LATER - TODO. Keeping it now in case I need to revisit division
+		* AcrossA.
 		divisionAcrossA = gcnew List<float>(listOfDictionaries->Count);
 		divisionAcrossB = gcnew List<float>(listOfDictionaries_B->Count);
 		float divisorA, divisorB, dividendA, dividendB;
@@ -480,22 +540,46 @@ private:
 			divisorB = userSelectionsToKeys[3];
 			dividendB = userSelectionsToKeys[2];
 		}
-		float runningSum = 0, res;
-		//first, handle the first dictionary.
-		for each (Dictionary<float, float> ^ dict in listOfDictionaries) {
-			res = dict[dividendA] / dict[divisorA];
-			divisionAcrossA->Add(res);
-			runningSum += res;
+		**/
+		bool differentDivisors = false;
+		int elems = numberOfValidSets();
+		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
+			if (set != nullptr) { elems++;}
 		}
-		avgA = runningSum / listOfDictionaries->Count;
-		//then the other one.
-		runningSum = 0;
-		for each (Dictionary<float, float> ^ dict in listOfDictionaries_B) {
-			res = dict[dividendB] / dict[divisorB];
-			divisionAcrossB->Add(res);
-			runningSum += res;
+
+
+		if (userSelectionsToKeys->Count / 2 == elems) {
+			differentDivisors = true;
 		}
-		avgB = runningSum / listOfDictionaries->Count;
+
+		int whichKey = 0, curr = 0;
+		float divisor, dividend;
+
+		//outer loop - run through all the sets of files.
+		if (!differentDivisors) {
+			dividend = userSelectionsToKeys[0];
+			divisor = userSelectionsToKeys[1];
+		}
+		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
+			//first, handle the first dictionary.
+			if (set == nullptr) {
+				curr++;
+				continue;
+
+			}
+			float runningSum = 0, res;
+			for each (Dictionary<float, float> ^ dict in set) {
+				if (differentDivisors) {
+					dividend = userSelectionsToKeys[whichKey];
+					divisor = userSelectionsToKeys[whichKey + 1];
+					whichKey += 2;
+				}
+				res = dict[dividend] / dict[divisor];
+				runningSum += res;
+			}
+			listOfAverages[curr] = runningSum / listOfDictionaries->Count;
+			curr++;
+		}
 		return 1;
 
 	}

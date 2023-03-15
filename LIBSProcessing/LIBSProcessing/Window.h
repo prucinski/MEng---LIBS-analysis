@@ -705,7 +705,7 @@ namespace LIBSProcessing {
 		float attemptConversion;
 		//try converting - if failed, show a message to the user
 		try {
-			attemptConversion = Convert::ToDouble(waveEdit->Text);
+			attemptConversion = Convert::ToSingle(waveEdit->Text);
 		}
 		catch (...) {
 			MessageBox::Show("Error - please input a float value");
@@ -733,7 +733,7 @@ namespace LIBSProcessing {
 	}
 	//GUI handler - remove wavelength from analysis
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
-		float waveToRemove = Convert::ToDouble(allWavelenghts->Text);
+		float waveToRemove = Convert::ToSingle(allWavelenghts->Text);
 		b.removeWavelength(waveToRemove);
 		allWavelenghts->DataSource = nullptr;
 		allWavelenghts->DataSource = b.selectedWavelengths;
@@ -747,7 +747,7 @@ namespace LIBSProcessing {
 		if (highestCheckbox->Checked) { option = 1; }
 		float range;
 		try {
-			range = Convert::ToDouble(rangeInput->Text);
+			range = Convert::ToSingle(rangeInput->Text);
 			if (range < 0) { range = -1 * range; };
 		}
 		catch (...) {
@@ -804,6 +804,7 @@ namespace LIBSProcessing {
 
 	 private: System::Void fileSelect_setB_Click(System::Object^ sender, System::EventArgs^ e) {
 		 handleSelection(2);
+		 selectFilesLabel_setB->Text = "Files selected.";
 	 }
 	private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
@@ -845,16 +846,27 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		}
 		float concentration;
 		try {
-			concentration = Convert::ToDouble(analyteBox_setB->Text);
+			concentration = Convert::ToSingle(analyteBox_setB->Text);
 		}
 		catch (...) {
 			MessageBox::Show("Error - please input a float value for the concentration");
 			return;
 		}
-		b.addSetToSets(concentration, setsOfData->SelectedIndex);
+		int i = setsOfData->SelectedIndex;
+		float cutoff;
+		try {
+			cutoff = Convert::ToSingle(noiseCutoff->Text);
+		}
+		catch (...) {
+			cutoff = -199;
+		}
 
-
-
+		b.addSetToSets(concentration, i, cutoff);
+		setsOfData->DataSource = nullptr;
+		setsOfData->DataSource = b.metadata;
+		selectFilesLabel_setB->Text = "Select files to process:.";
+		setsOfData->SelectedIndex = i >= b.metadata->Count-1 ? i : i + 1;
+		return;
 	}
 
 	/// <summary>
@@ -871,7 +883,7 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 					cutoff = -199;
 				}
 				else {
-					cutoff = Convert::ToDouble(noiseCutoff->Text);
+					cutoff = Convert::ToSingle(noiseCutoff->Text);
 				}
 			}
 			//if unsuccessful, inform user and continue operation.

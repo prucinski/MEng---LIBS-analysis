@@ -29,16 +29,16 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.List`1[System.Int32] userSelectionsIndexes : Public
     System.Collections.Generic.List`1[System.String] filesToExtract_B : Public
     System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]] listOfDictionaries_B : Public
-    System.Collections.Generic.List`1[System.Single] divisionAcrossA : Public
-    System.Collections.Generic.List`1[System.Single] divisionAcrossB : Public
-    Single avgA : Public
-    Single avgB : Public
     System.Collections.Generic.List`1[System.String] metadata : Public
+    System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]]] listOfSets : Public
+    System.Collections.Generic.List`1[System.Single] listOfConcentrations : Public
+    System.Collections.Generic.List`1[System.Single] listOfAverages : Public
   Methods:
     saveToFile(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     saveToFileCalibration(String, String, String): PrivateScope, Public, HideBySig
     loadFiles(String[], Single, Int32): PrivateScope, Public, HideBySig
     initializeSets(Int32): PrivateScope, Public, HideBySig
+    addSetToSets(Single, Int32, Single): PrivateScope, Public, HideBySig
     getRequestedSpectraStandardMode(Int32, Single): PrivateScope, Public, HideBySig
     getRequestedSpectraCalibrationMode(): PrivateScope, Public, HideBySig
     getAveragedSpectra(): PrivateScope, Public, HideBySig
