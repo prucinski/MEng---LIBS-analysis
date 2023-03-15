@@ -42,6 +42,10 @@ public:
 	List<float>^ divisionAcrossB;
 	float avgA, avgB;											//average values of two lists above.
 
+	//multi-set processing.
+	List<String^>^ metadata;
+	List< List<Dictionary<float, float>^>^>^ listOfSets;
+
 
 	Backend() {
 		directory = Application::StartupPath;
@@ -156,15 +160,15 @@ public:
 		return 1;
 	}
 
-	int loadFiles(array<String^>^ fileNames, float cutoff, int whichDictionary) {
+	int loadFiles(array<String^>^ fileNames, float cutoff, int whichMode) {
 		List<String^>^ files;
-		if (whichDictionary == 1) {
+		if (whichMode == 1) {
 			//reinitialize the arrays each time.
 			filesToExtract = gcnew List<String^>();
 			//point to the relevant array.
 			files = filesToExtract;
 		}
-		else if(whichDictionary == 2){
+		else if(whichMode == 2){
 			filesToExtract_B = gcnew List<String^>();
 			files = filesToExtract_B;
 		}
@@ -181,8 +185,24 @@ public:
 				return 0;
 			}
 		}
-		return initializeMemoryFiles(cutoff, whichDictionary);
+		return initializeMemoryFiles(cutoff, whichMode);
 
+	}
+
+	int initializeSets(int length) {
+		metadata = gcnew List <String^>(length);
+
+		for (int i = 0; i < length; i++) {
+			metadata->Add(Convert::ToString(i+1)+ ". THIS SET IS EMPTY.");
+		}
+
+		return 1;
+
+	}
+
+	int addSetToSets(int concentration, int index) {
+
+		return 1;
 	}
 
 	//function to be called by the UI to process the dictionary as per our selected wavelengths.
@@ -274,18 +294,20 @@ private:
 		int lengthOfListOfMaps;
 		List<Dictionary<float, float>^>^ currentListOfDictionaries;
 		if (whichDictionary == 1) {
+			lengthOfListOfMaps = filesToExtract->Count;
 			////allocating memory so that the array does not need resizing
 			listOfDictionaries = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
 			//point to the relevant array.
 			currentListOfDictionaries = listOfDictionaries;
 			files = filesToExtract;
-			lengthOfListOfMaps = filesToExtract->Count;
+
 		}
 		else if (whichDictionary == 2) {
+			lengthOfListOfMaps = filesToExtract_B->Count;
 			listOfDictionaries_B = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
 			currentListOfDictionaries = listOfDictionaries_B;
 			files = filesToExtract_B;
-			lengthOfListOfMaps = filesToExtract_B->Count;
+
 		}
 		else {
 			//this should never be reached.

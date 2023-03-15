@@ -39,19 +39,28 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::Label^ setAlabel;
 	private: System::Windows::Forms::Label^ setBlabel;
 
-	private: System::Windows::Forms::Label^ cutoffLabel_setB;
-	private: System::Windows::Forms::Label^ noOfFiles_setB;
+
+
 	private: System::Windows::Forms::Label^ selectFilesLabel_setB;
 
 	private: System::Windows::Forms::Button^ fileSelect_setB;
-	private: System::Windows::Forms::TextBox^ analyteBox;
-	private: System::Windows::Forms::Label^ analyteLabel;
+
+
 	private: System::Windows::Forms::Label^ analyteLabel_setB;
 
 
 	private: System::Windows::Forms::TextBox^ analyteBox_setB;
 	private: System::ComponentModel::BackgroundWorker^ backgroundWorker1;
 	private: System::Windows::Forms::Label^ setNumbersLabel;
+	private: System::Windows::Forms::Label^ howManyLabel;
+	private: System::Windows::Forms::Button^ howManySubmit;
+
+
+	private: System::Windows::Forms::TextBox^ howManySets;
+	private: System::Windows::Forms::ComboBox^ setsOfData;
+	private: System::Windows::Forms::Label^ setsOfData_label;
+	private: System::Windows::Forms::Button^ addSetButton;
+
 
 
 
@@ -133,7 +142,6 @@ namespace LIBSProcessing {
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->noiseCutoff = (gcnew System::Windows::Forms::TextBox());
-			this->analyteBox = (gcnew System::Windows::Forms::TextBox());
 			this->analyteBox_setB = (gcnew System::Windows::Forms::TextBox());
 			this->setNumbersLabel = (gcnew System::Windows::Forms::Label());
 			this->allWavelenghts = (gcnew System::Windows::Forms::ComboBox());
@@ -164,13 +172,16 @@ namespace LIBSProcessing {
 			this->calibrationToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->setAlabel = (gcnew System::Windows::Forms::Label());
 			this->setBlabel = (gcnew System::Windows::Forms::Label());
-			this->cutoffLabel_setB = (gcnew System::Windows::Forms::Label());
-			this->noOfFiles_setB = (gcnew System::Windows::Forms::Label());
 			this->selectFilesLabel_setB = (gcnew System::Windows::Forms::Label());
 			this->fileSelect_setB = (gcnew System::Windows::Forms::Button());
-			this->analyteLabel = (gcnew System::Windows::Forms::Label());
 			this->analyteLabel_setB = (gcnew System::Windows::Forms::Label());
 			this->backgroundWorker1 = (gcnew System::ComponentModel::BackgroundWorker());
+			this->howManyLabel = (gcnew System::Windows::Forms::Label());
+			this->howManySubmit = (gcnew System::Windows::Forms::Button());
+			this->howManySets = (gcnew System::Windows::Forms::TextBox());
+			this->setsOfData = (gcnew System::Windows::Forms::ComboBox());
+			this->setsOfData_label = (gcnew System::Windows::Forms::Label());
+			this->addSetButton = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -248,25 +259,16 @@ namespace LIBSProcessing {
 			// 
 			// noiseCutoff
 			// 
-			this->noiseCutoff->Location = System::Drawing::Point(254, 46);
+			this->noiseCutoff->Location = System::Drawing::Point(244, 43);
 			this->noiseCutoff->Name = L"noiseCutoff";
 			this->noiseCutoff->Size = System::Drawing::Size(100, 20);
 			this->noiseCutoff->TabIndex = 29;
 			this->toolTip1->SetToolTip(this->noiseCutoff, L"Values below this threshold will be dropped to 0.");
 			// 
-			// analyteBox
-			// 
-			this->analyteBox->Enabled = false;
-			this->analyteBox->Location = System::Drawing::Point(254, 135);
-			this->analyteBox->Name = L"analyteBox";
-			this->analyteBox->Size = System::Drawing::Size(100, 20);
-			this->analyteBox->TabIndex = 40;
-			this->toolTip1->SetToolTip(this->analyteBox, L"Values below this threshold will be dropped to 0.");
-			// 
 			// analyteBox_setB
 			// 
 			this->analyteBox_setB->Enabled = false;
-			this->analyteBox_setB->Location = System::Drawing::Point(254, 219);
+			this->analyteBox_setB->Location = System::Drawing::Point(244, 258);
 			this->analyteBox_setB->Name = L"analyteBox_setB";
 			this->analyteBox_setB->Size = System::Drawing::Size(100, 20);
 			this->analyteBox_setB->TabIndex = 42;
@@ -276,11 +278,12 @@ namespace LIBSProcessing {
 			// 
 			this->setNumbersLabel->AutoSize = true;
 			this->setNumbersLabel->Enabled = false;
-			this->setNumbersLabel->Location = System::Drawing::Point(12, 224);
+			this->setNumbersLabel->Location = System::Drawing::Point(9, 224);
 			this->setNumbersLabel->Name = L"setNumbersLabel";
-			this->setNumbersLabel->Size = System::Drawing::Size(152, 13);
+			this->setNumbersLabel->Size = System::Drawing::Size(156, 52);
 			this->setNumbersLabel->TabIndex = 44;
-			this->setNumbersLabel->Text = L"Set A: 1st/2nd; Set B: 3rd/4th.";
+			this->setNumbersLabel->Text = L"Set 1: 1st/2nd; Set 2: 3rd/4th...\r\nIf one ratio can is supplied,\r\n it will be app"
+				L"lied to all sets.\r\n\r\n";
 			this->toolTip1->SetToolTip(this->setNumbersLabel, L"3rd and 4th can be left blank; they will remain the same for set A.");
 			// 
 			// allWavelenghts
@@ -313,7 +316,7 @@ namespace LIBSProcessing {
 			// 
 			// saveFolderSelect
 			// 
-			this->saveFolderSelect->Location = System::Drawing::Point(303, 378);
+			this->saveFolderSelect->Location = System::Drawing::Point(170, 450);
 			this->saveFolderSelect->Name = L"saveFolderSelect";
 			this->saveFolderSelect->Size = System::Drawing::Size(75, 23);
 			this->saveFolderSelect->TabIndex = 12;
@@ -324,7 +327,7 @@ namespace LIBSProcessing {
 			// label5
 			// 
 			this->label5->AutoSize = true;
-			this->label5->Location = System::Drawing::Point(129, 364);
+			this->label5->Location = System::Drawing::Point(17, 435);
 			this->label5->Name = L"label5";
 			this->label5->Size = System::Drawing::Size(72, 13);
 			this->label5->TabIndex = 13;
@@ -332,7 +335,7 @@ namespace LIBSProcessing {
 			// 
 			// savePath
 			// 
-			this->savePath->Location = System::Drawing::Point(132, 381);
+			this->savePath->Location = System::Drawing::Point(20, 452);
 			this->savePath->Name = L"savePath";
 			this->savePath->ReadOnly = true;
 			this->savePath->Size = System::Drawing::Size(143, 20);
@@ -340,7 +343,7 @@ namespace LIBSProcessing {
 			// 
 			// nameOfFile
 			// 
-			this->nameOfFile->Location = System::Drawing::Point(180, 429);
+			this->nameOfFile->Location = System::Drawing::Point(277, 453);
 			this->nameOfFile->Name = L"nameOfFile";
 			this->nameOfFile->Size = System::Drawing::Size(143, 20);
 			this->nameOfFile->TabIndex = 15;
@@ -349,7 +352,7 @@ namespace LIBSProcessing {
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Location = System::Drawing::Point(203, 413);
+			this->label6->Location = System::Drawing::Point(273, 435);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(104, 13);
 			this->label6->TabIndex = 16;
@@ -357,7 +360,7 @@ namespace LIBSProcessing {
 			// 
 			// saveToFile
 			// 
-			this->saveToFile->Location = System::Drawing::Point(215, 455);
+			this->saveToFile->Location = System::Drawing::Point(426, 452);
 			this->saveToFile->Name = L"saveToFile";
 			this->saveToFile->Size = System::Drawing::Size(75, 23);
 			this->saveToFile->TabIndex = 17;
@@ -378,7 +381,7 @@ namespace LIBSProcessing {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Location = System::Drawing::Point(251, 98);
+			this->label7->Location = System::Drawing::Point(241, 95);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(113, 13);
 			this->label7->TabIndex = 19;
@@ -386,7 +389,7 @@ namespace LIBSProcessing {
 			// 
 			// preview
 			// 
-			this->preview->Location = System::Drawing::Point(196, 298);
+			this->preview->Location = System::Drawing::Point(202, 411);
 			this->preview->Name = L"preview";
 			this->preview->Size = System::Drawing::Size(108, 21);
 			this->preview->TabIndex = 20;
@@ -414,7 +417,7 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->AutoSize = true;
 			this->saveSelectedBox->Checked = true;
 			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->saveSelectedBox->Location = System::Drawing::Point(12, 244);
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 279);
 			this->saveSelectedBox->Name = L"saveSelectedBox";
 			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
 			this->saveSelectedBox->TabIndex = 23;
@@ -456,7 +459,7 @@ namespace LIBSProcessing {
 			// label8
 			// 
 			this->label8->AutoSize = true;
-			this->label8->Location = System::Drawing::Point(251, 27);
+			this->label8->Location = System::Drawing::Point(241, 24);
 			this->label8->Name = L"label8";
 			this->label8->Size = System::Drawing::Size(192, 13);
 			this->label8->TabIndex = 30;
@@ -465,7 +468,7 @@ namespace LIBSProcessing {
 			// label9
 			// 
 			this->label9->AutoSize = true;
-			this->label9->Location = System::Drawing::Point(374, 49);
+			this->label9->Location = System::Drawing::Point(364, 46);
 			this->label9->Name = L"label9";
 			this->label9->Size = System::Drawing::Size(126, 13);
 			this->label9->TabIndex = 31;
@@ -507,61 +510,41 @@ namespace LIBSProcessing {
 			this->standardToolStripMenuItem->Checked = true;
 			this->standardToolStripMenuItem->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->standardToolStripMenuItem->Name = L"standardToolStripMenuItem";
-			this->standardToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+			this->standardToolStripMenuItem->Size = System::Drawing::Size(132, 22);
 			this->standardToolStripMenuItem->Text = L"Standard";
 			this->standardToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::standardToolStripMenuItem_Click);
 			// 
 			// calibrationToolStripMenuItem
 			// 
 			this->calibrationToolStripMenuItem->Name = L"calibrationToolStripMenuItem";
-			this->calibrationToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+			this->calibrationToolStripMenuItem->Size = System::Drawing::Size(132, 22);
 			this->calibrationToolStripMenuItem->Text = L"Calibration";
 			this->calibrationToolStripMenuItem->Click += gcnew System::EventHandler(this, &Window::calibrationToolStripMenuItem_Click);
 			// 
 			// setAlabel
 			// 
 			this->setAlabel->AutoSize = true;
-			this->setAlabel->Location = System::Drawing::Point(251, 85);
+			this->setAlabel->Location = System::Drawing::Point(241, 77);
 			this->setAlabel->Name = L"setAlabel";
-			this->setAlabel->Size = System::Drawing::Size(36, 13);
+			this->setAlabel->Size = System::Drawing::Size(110, 13);
 			this->setAlabel->TabIndex = 34;
-			this->setAlabel->Text = L"Set A:";
+			this->setAlabel->Text = L"Single-set processing:";
 			// 
 			// setBlabel
 			// 
 			this->setBlabel->AutoSize = true;
 			this->setBlabel->Enabled = false;
-			this->setBlabel->Location = System::Drawing::Point(251, 169);
+			this->setBlabel->Location = System::Drawing::Point(241, 141);
 			this->setBlabel->Name = L"setBlabel";
-			this->setBlabel->Size = System::Drawing::Size(36, 13);
+			this->setBlabel->Size = System::Drawing::Size(103, 13);
 			this->setBlabel->TabIndex = 39;
-			this->setBlabel->Text = L"Set B:";
-			// 
-			// cutoffLabel_setB
-			// 
-			this->cutoffLabel_setB->AutoSize = true;
-			this->cutoffLabel_setB->Enabled = false;
-			this->cutoffLabel_setB->Location = System::Drawing::Point(422, 216);
-			this->cutoffLabel_setB->Name = L"cutoffLabel_setB";
-			this->cutoffLabel_setB->Size = System::Drawing::Size(64, 13);
-			this->cutoffLabel_setB->TabIndex = 38;
-			this->cutoffLabel_setB->Text = L"at no cutoff.";
-			// 
-			// noOfFiles_setB
-			// 
-			this->noOfFiles_setB->AutoSize = true;
-			this->noOfFiles_setB->Enabled = false;
-			this->noOfFiles_setB->Location = System::Drawing::Point(422, 203);
-			this->noOfFiles_setB->Name = L"noOfFiles_setB";
-			this->noOfFiles_setB->Size = System::Drawing::Size(80, 13);
-			this->noOfFiles_setB->TabIndex = 37;
-			this->noOfFiles_setB->Text = L"files selected: 0";
+			this->setBlabel->Text = L"Multi-set processing:";
 			// 
 			// selectFilesLabel_setB
 			// 
 			this->selectFilesLabel_setB->AutoSize = true;
 			this->selectFilesLabel_setB->Enabled = false;
-			this->selectFilesLabel_setB->Location = System::Drawing::Point(251, 182);
+			this->selectFilesLabel_setB->Location = System::Drawing::Point(241, 221);
 			this->selectFilesLabel_setB->Name = L"selectFilesLabel_setB";
 			this->selectFilesLabel_setB->Size = System::Drawing::Size(113, 13);
 			this->selectFilesLabel_setB->TabIndex = 36;
@@ -570,7 +553,7 @@ namespace LIBSProcessing {
 			// fileSelect_setB
 			// 
 			this->fileSelect_setB->Enabled = false;
-			this->fileSelect_setB->Location = System::Drawing::Point(425, 177);
+			this->fileSelect_setB->Location = System::Drawing::Point(425, 219);
 			this->fileSelect_setB->Name = L"fileSelect_setB";
 			this->fileSelect_setB->Size = System::Drawing::Size(75, 23);
 			this->fileSelect_setB->TabIndex = 35;
@@ -578,39 +561,91 @@ namespace LIBSProcessing {
 			this->fileSelect_setB->UseVisualStyleBackColor = true;
 			this->fileSelect_setB->Click += gcnew System::EventHandler(this, &Window::fileSelect_setB_Click);
 			// 
-			// analyteLabel
-			// 
-			this->analyteLabel->AutoSize = true;
-			this->analyteLabel->Enabled = false;
-			this->analyteLabel->Location = System::Drawing::Point(251, 121);
-			this->analyteLabel->Name = L"analyteLabel";
-			this->analyteLabel->Size = System::Drawing::Size(143, 13);
-			this->analyteLabel->TabIndex = 41;
-			this->analyteLabel->Text = L"Analyte concentration - set A";
-			// 
 			// analyteLabel_setB
 			// 
 			this->analyteLabel_setB->AutoSize = true;
 			this->analyteLabel_setB->Enabled = false;
-			this->analyteLabel_setB->Location = System::Drawing::Point(251, 205);
+			this->analyteLabel_setB->Location = System::Drawing::Point(241, 244);
 			this->analyteLabel_setB->Name = L"analyteLabel_setB";
-			this->analyteLabel_setB->Size = System::Drawing::Size(143, 13);
+			this->analyteLabel_setB->Size = System::Drawing::Size(174, 13);
 			this->analyteLabel_setB->TabIndex = 43;
-			this->analyteLabel_setB->Text = L"Analyte concentration - set B";
+			this->analyteLabel_setB->Text = L"Analyte concentration for given set:";
+			// 
+			// howManyLabel
+			// 
+			this->howManyLabel->AutoSize = true;
+			this->howManyLabel->Enabled = false;
+			this->howManyLabel->Location = System::Drawing::Point(241, 157);
+			this->howManyLabel->Name = L"howManyLabel";
+			this->howManyLabel->Size = System::Drawing::Size(131, 13);
+			this->howManyLabel->TabIndex = 47;
+			this->howManyLabel->Text = L"How may sets to process\?";
+			// 
+			// howManySubmit
+			// 
+			this->howManySubmit->Enabled = false;
+			this->howManySubmit->Location = System::Drawing::Point(425, 176);
+			this->howManySubmit->Name = L"howManySubmit";
+			this->howManySubmit->Size = System::Drawing::Size(75, 23);
+			this->howManySubmit->TabIndex = 46;
+			this->howManySubmit->Text = L"Submit";
+			this->howManySubmit->UseVisualStyleBackColor = true;
+			this->howManySubmit->Click += gcnew System::EventHandler(this, &Window::howManySubmit_Click);
+			// 
+			// howManySets
+			// 
+			this->howManySets->Enabled = false;
+			this->howManySets->Location = System::Drawing::Point(244, 176);
+			this->howManySets->Name = L"howManySets";
+			this->howManySets->Size = System::Drawing::Size(100, 20);
+			this->howManySets->TabIndex = 45;
+			// 
+			// setsOfData
+			// 
+			this->setsOfData->Enabled = false;
+			this->setsOfData->FormattingEnabled = true;
+			this->setsOfData->Location = System::Drawing::Point(244, 311);
+			this->setsOfData->MaxDropDownItems = 20;
+			this->setsOfData->Name = L"setsOfData";
+			this->setsOfData->Size = System::Drawing::Size(256, 21);
+			this->setsOfData->TabIndex = 48;
+			// 
+			// setsOfData_label
+			// 
+			this->setsOfData_label->AutoSize = true;
+			this->setsOfData_label->Enabled = false;
+			this->setsOfData_label->Location = System::Drawing::Point(241, 295);
+			this->setsOfData_label->Name = L"setsOfData_label";
+			this->setsOfData_label->Size = System::Drawing::Size(118, 13);
+			this->setsOfData_label->TabIndex = 49;
+			this->setsOfData_label->Text = L"Sets of data information";
+			// 
+			// addSetButton
+			// 
+			this->addSetButton->Enabled = false;
+			this->addSetButton->Location = System::Drawing::Point(425, 258);
+			this->addSetButton->Name = L"addSetButton";
+			this->addSetButton->Size = System::Drawing::Size(75, 23);
+			this->addSetButton->TabIndex = 50;
+			this->addSetButton->Text = L"Add set";
+			this->addSetButton->UseVisualStyleBackColor = true;
+			this->addSetButton->Click += gcnew System::EventHandler(this, &Window::addSetButton_Click);
 			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->addSetButton);
+			this->Controls->Add(this->setsOfData_label);
+			this->Controls->Add(this->setsOfData);
+			this->Controls->Add(this->howManyLabel);
+			this->Controls->Add(this->howManySubmit);
+			this->Controls->Add(this->howManySets);
 			this->Controls->Add(this->setNumbersLabel);
 			this->Controls->Add(this->analyteLabel_setB);
 			this->Controls->Add(this->analyteBox_setB);
-			this->Controls->Add(this->analyteLabel);
-			this->Controls->Add(this->analyteBox);
 			this->Controls->Add(this->setBlabel);
-			this->Controls->Add(this->cutoffLabel_setB);
-			this->Controls->Add(this->noOfFiles_setB);
 			this->Controls->Add(this->selectFilesLabel_setB);
 			this->Controls->Add(this->fileSelect_setB);
 			this->Controls->Add(this->setAlabel);
@@ -732,7 +767,7 @@ namespace LIBSProcessing {
 	//GUI handler - save file
 	private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (calibrationToolStripMenuItem->Checked) {
-			int success = b.saveToFileCalibration(nameOfFile->Text, analyteBox->Text, analyteBox_setB->Text);
+			int success = b.saveToFileCalibration(nameOfFile->Text, "TODO", analyteBox_setB->Text);
 			if(success == 0){
 				MessageBox::Show("Error - file was unable to be saved with name " + b.nameOfFile);
 
@@ -781,6 +816,46 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 	setCalibrationGroup(false);
 
 }	
+	   //HANDLER - see how many sets the user is trying to initialize
+	   private: System::Void howManySubmit_Click(System::Object^ sender, System::EventArgs^ e) {
+		   int attemptConversion;
+		   try {
+			   attemptConversion = Convert::ToInt32(howManySets->Text);
+		   }
+		   catch (...) {
+			   MessageBox::Show("Error - please input an integer value");
+			   return;
+		   }
+		   b.initializeSets(attemptConversion);
+		   setsOfData->DataSource = nullptr;
+		   setsOfData->DataSource = b.metadata;
+		   howManySets->Text = "";
+
+
+	   }
+		//HANDLER - initialize sets in the backend
+	private: System::Void addSetButton_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (b.filesToExtract_B == nullptr || b.filesToExtract_B->Count == 0) {
+			MessageBox::Show("Error - no files selected");
+			return;
+		}
+		if (b.metadata == nullptr || b.metadata->Count == 0) {
+			MessageBox::Show("Error - no empty sets initialized");
+			return;
+		}
+		float concentration;
+		try {
+			concentration = Convert::ToDouble(analyteBox_setB->Text);
+		}
+		catch (...) {
+			MessageBox::Show("Error - please input a float value for the concentration");
+			return;
+		}
+		b.addSetToSets(concentration, setsOfData->SelectedIndex);
+
+
+
+	}
 
 	/// <summary>
 	/// Helper functions, not to clutter the main UI code - mainly with a single switch
@@ -816,12 +891,12 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 					}
 				}
 				else if (selectionWindow == 2) {
-					noOfFiles_setB->Text = "files selected: " + fileOpener->FileNames->Length;
+					//noOfFiles_setB->Text = "files selected: " + fileOpener->FileNames->Length;
 					if (cutoff == -199) {
-						cutoffLabel_setB->Text = "at no cutoff. ";
+						//cutoffLabel_setB->Text = "at no cutoff. ";
 					}
 					else {
-						cutoffLabel_setB->Text = "at cutoff: " + cutoff;
+						//cutoffLabel_setB->Text = "at cutoff: " + cutoff;
 					}
 
 				}
@@ -836,21 +911,35 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 	private: void setCalibrationGroup(bool value) {
 		standardToolStripMenuItem->Checked = value;
 		calibrationToolStripMenuItem->Checked = !value;
-		//setAlabel->Enabled = !value;
-		analyteLabel->Enabled = !value;
-		analyteBox->Enabled = !value;
+		//single set processing bit
+		setAlabel->Enabled = value;
+		label7 -> Enabled = value;
+		fileSelect->Enabled = value;
+		noOfFiles->Enabled = value;
+		cutoffLabel->Enabled = value;
+		//dual set processing bit
 		setBlabel->Enabled = !value;
+		howManyLabel->Enabled = !value;
+		howManySets->Enabled = !value;
+		howManySubmit->Enabled = !value;
 		selectFilesLabel_setB->Enabled = !value;
 		analyteLabel_setB->Enabled = !value;
 		analyteBox_setB->Enabled = !value;
 		fileSelect_setB->Enabled = !value;
 		selectFilesLabel_setB->Enabled = !value;
-		noOfFiles_setB->Enabled = !value;
-		cutoffLabel_setB->Enabled = !value;
+		addSetButton->Enabled = !value;
+		//information
+		setsOfData->Enabled = !value;
+		setsOfData_label->Enabled = !value;
+		//left hand side
+		label3->Enabled = value;
+		rangeInput->Enabled = value;
 		setNumbersLabel->Enabled = !value;
 		saveSelectedBox->Enabled = value;
 
 		   }
+
+
 
 };
 }

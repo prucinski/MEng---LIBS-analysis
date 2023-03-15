@@ -33,10 +33,12 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.List`1[System.Single] divisionAcrossB : Public
     Single avgA : Public
     Single avgB : Public
+    System.Collections.Generic.List`1[System.String] metadata : Public
   Methods:
     saveToFile(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     saveToFileCalibration(String, String, String): PrivateScope, Public, HideBySig
     loadFiles(String[], Single, Int32): PrivateScope, Public, HideBySig
+    initializeSets(Int32): PrivateScope, Public, HideBySig
     getRequestedSpectraStandardMode(Int32, Single): PrivateScope, Public, HideBySig
     getRequestedSpectraCalibrationMode(): PrivateScope, Public, HideBySig
     getAveragedSpectra(): PrivateScope, Public, HideBySig
