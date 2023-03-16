@@ -60,6 +60,7 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::ComboBox^ setsOfData;
 	private: System::Windows::Forms::Label^ setsOfData_label;
 	private: System::Windows::Forms::Button^ addSetButton;
+	private: System::Windows::Forms::Label^ Rscore;
 
 
 
@@ -182,6 +183,7 @@ namespace LIBSProcessing {
 			this->setsOfData = (gcnew System::Windows::Forms::ComboBox());
 			this->setsOfData_label = (gcnew System::Windows::Forms::Label());
 			this->addSetButton = (gcnew System::Windows::Forms::Button());
+			this->Rscore = (gcnew System::Windows::Forms::Label());
 			this->groupBox1->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -389,7 +391,7 @@ namespace LIBSProcessing {
 			// 
 			// preview
 			// 
-			this->preview->Location = System::Drawing::Point(202, 411);
+			this->preview->Location = System::Drawing::Point(204, 389);
 			this->preview->Name = L"preview";
 			this->preview->Size = System::Drawing::Size(108, 21);
 			this->preview->TabIndex = 20;
@@ -631,11 +633,21 @@ namespace LIBSProcessing {
 			this->addSetButton->UseVisualStyleBackColor = true;
 			this->addSetButton->Click += gcnew System::EventHandler(this, &Window::addSetButton_Click);
 			// 
+			// Rscore
+			// 
+			this->Rscore->AutoSize = true;
+			this->Rscore->Enabled = false;
+			this->Rscore->Location = System::Drawing::Point(201, 413);
+			this->Rscore->Name = L"Rscore";
+			this->Rscore->Size = System::Drawing::Size(0, 13);
+			this->Rscore->TabIndex = 51;
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->Rscore);
 			this->Controls->Add(this->addSetButton);
 			this->Controls->Add(this->setsOfData_label);
 			this->Controls->Add(this->setsOfData);
@@ -757,10 +769,12 @@ namespace LIBSProcessing {
 		//Perform operations to retrieve division information 
 		if (calibrationToolStripMenuItem->Checked) {
 			b.getRequestedSpectraCalibrationMode();
+			Rscore->Text = "R^2 score: " + Convert::ToString(b.getRSquared());
 		}
 		//standard mode operation
 		else {
 			b.getRequestedSpectraStandardMode(option, range);
+			
 		}
 	}
 

@@ -44,6 +44,7 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     getAveragedSpectra(): PrivateScope, Public, HideBySig
     addWavelength(Single): PrivateScope, Public, HideBySig
     removeWavelength(Single): PrivateScope, Public, HideBySig
+    getRSquared(): PrivateScope, Public, HideBySig
 Class LIBSProcessing.Window: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
   :System.Windows.Forms.Form
     Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

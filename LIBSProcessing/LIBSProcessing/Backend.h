@@ -287,7 +287,7 @@ public:
 	}
 
 	//function to calculate the R value, after we have processed all the data files.
-	int getRSquared() {
+	float getRSquared() {
 		//calculate average intensity & average concentration; all concentrations.
 		float runningSumInt = 0, runningSumCon = 0;
 		int goodEntries = 0;
@@ -300,7 +300,7 @@ public:
 			runningSumInt += listOfAverages[i];
 			runningSumCon += listOfConcentrations[i];
 		}
-		float averageConcentration = runninSumCon / goodEntries;
+		float averageConcentration = runningSumCon / goodEntries;
 		float averageIntensity = runningSumInt / goodEntries;
 		//now, we have everything we need. Plug it into the R score formula.
 		//1. Dividend - sum(Ii-Iaavg)(Ci-Cavg)
@@ -309,11 +309,11 @@ public:
 			if (listOfConcentrations[i] == -1) {
 				continue;
 			}
-			div += (listOfConcentrations[i] - averageConcentration)(listOfAverages[i] - averageConcentration);
+			div += (listOfConcentrations[i] - averageConcentration)*(listOfAverages[i] - averageConcentration);
 		}
 		//2. Divisor - sqrt(sum(Ii-Iavg)^2)*sqrt(sum(Ci-Cavg)^2)
 		float divisor;
-		float sumI, sumC;
+		float sumI = 0, sumC = 0;
 		for (int i = 0; i < listOfConcentrations->Count; i++) {
 			if (listOfConcentrations[i] == -1) {
 				continue;
@@ -321,11 +321,11 @@ public:
 			sumC += (listOfConcentrations[i] - averageConcentration)*(listOfConcentrations[i] - averageConcentration);
 			sumI += (listOfAverages[i] - averageIntensity) * (listOfAverages[i] - averageIntensity);
 		}
-		sumC = Math::Sqrt(sumC);
-		sumI = Math::Sqrt(sumI);
+		sumC = Convert::ToSingle(Math::Sqrt(sumC));
+		sumI = Convert::ToSingle(Math::Sqrt(sumI));
 		divisor = sumC * sumI;
 		//3. Finally, caluclate the R score.
-		R = div / divisor;
+		float R = div / divisor;
 		return R * R;
 		
 	}
