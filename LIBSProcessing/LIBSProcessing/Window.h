@@ -636,7 +636,6 @@ namespace LIBSProcessing {
 			// Rscore
 			// 
 			this->Rscore->AutoSize = true;
-			this->Rscore->Enabled = false;
 			this->Rscore->Location = System::Drawing::Point(201, 413);
 			this->Rscore->Name = L"Rscore";
 			this->Rscore->Size = System::Drawing::Size(0, 13);
