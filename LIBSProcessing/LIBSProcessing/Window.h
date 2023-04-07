@@ -282,11 +282,12 @@ namespace LIBSProcessing {
 			this->setNumbersLabel->Enabled = false;
 			this->setNumbersLabel->Location = System::Drawing::Point(9, 224);
 			this->setNumbersLabel->Name = L"setNumbersLabel";
-			this->setNumbersLabel->Size = System::Drawing::Size(156, 52);
+			this->setNumbersLabel->Size = System::Drawing::Size(161, 26);
 			this->setNumbersLabel->TabIndex = 44;
-			this->setNumbersLabel->Text = L"Set 1: 1st/2nd; Set 2: 3rd/4th...\r\nIf one ratio can is supplied,\r\n it will be app"
-				L"lied to all sets.\r\n\r\n";
-			this->toolTip1->SetToolTip(this->setNumbersLabel, L"3rd and 4th can be left blank; they will remain the same for set A.");
+			this->setNumbersLabel->Text = L"Set 1: 1st/2nd; Set 2: 3rd/4th... \r\n Hover over for more information.";
+			this->toolTip1->SetToolTip(this->setNumbersLabel, L"If one ratio is supplied, it will be applied to all sets.\r\nIf one wavelength is"
+				L" supplied, no division will be performed.  \r\n3rd and 4th can be left blank; the dividing wavelengths for other sets "
+				L"will remain the same as for set A.");
 			// 
 			// allWavelenghts
 			// 
@@ -419,7 +420,7 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->AutoSize = true;
 			this->saveSelectedBox->Checked = true;
 			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->saveSelectedBox->Location = System::Drawing::Point(12, 279);
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 260);
 			this->saveSelectedBox->Name = L"saveSelectedBox";
 			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
 			this->saveSelectedBox->TabIndex = 23;

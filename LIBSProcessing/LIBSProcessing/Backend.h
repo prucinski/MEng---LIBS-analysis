@@ -137,7 +137,7 @@ public:
 				differentDivisors = true;
 			}
 			//write headers
-			sw->Write(",Average from division,");
+			sw->Write(",Average of sums from division,");
 			sw->Write("dividend,");
 			sw->Write("divisor,");
 			sw->Write("Concentration\n");
@@ -259,8 +259,8 @@ public:
 	}
 
 	int getRequestedSpectraCalibrationMode() {
-		//if we have less than 2 items, discard. We will check for whether each set has it's own wavelengths later.
-		if (selectedWavelengths->Count < 2) {
+		//if we have less than 1 item, discard. We will check for whether each set has it's own wavelengths later.
+		if (selectedWavelengths->Count < 1) {
 			return 0;
 		}
 		//first, keys CLOSEST to the value that the user input must be found.
@@ -565,8 +565,8 @@ private:
 	}
 
 
-	//find the division values and save them to an array. Function to be called after there are at least 2 
-	//keys selected by the user.
+	//find the division values and save them to an array. Function to be called after there is at least 1
+	//key selected by the user.
 	int findDivisionValues() {
 
 		/** OBSOLETE CODE, WILL REMOVE LATER - TODO. Keeping it now in case I need to revisit division
@@ -591,16 +591,28 @@ private:
 			if (set != nullptr) { elems++;}
 		}
 
-
+		//check if we have as many selected pairs of wavelengths as sets
 		if (userSelectionsToKeys->Count / 2 == elems) {
 			differentDivisors = true;
 		}
 
 		int whichKey = 0, curr = 0;
 		float divisor, dividend;
+		bool singleMode = false;
+
+		//case of no division - code still runs, but it divides by 1 (i. e. returns intensity)
+		if (userSelectionsToKeys->Count == 1) {
+			dividend = userSelectionsToKeys[0];
+			divisor = 1;
+			//makeshift solution - it's quite bad practice since this key does not exist;
+			//but it works out for saving a file
+			userSelectionsToKeys->Add(1);
+			userSelectionsIndexes->Add(-1);
+			singleMode = true;
+		}
 
 		//outer loop - run through all the sets of files.
-		if (!differentDivisors) {
+		else if (!differentDivisors) {
 			dividend = userSelectionsToKeys[0];
 			divisor = userSelectionsToKeys[1];
 		}
@@ -618,7 +630,7 @@ private:
 					divisor = userSelectionsToKeys[whichKey + 1];
 					whichKey += 2;
 				}
-				res = dict[dividend] / dict[divisor];
+				res = dict[dividend] /  (singleMode ? 1 : dict[divisor]);
 				runningSum += res;
 			}
 			listOfAverages[curr] = runningSum / listOfDictionaries->Count;
