@@ -27,6 +27,8 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.List`1[System.Single] selectedWavelengths : Public
     System.Collections.Generic.List`1[System.Single] userSelectionsToKeys : Public
     System.Collections.Generic.List`1[System.Int32] userSelectionsIndexes : Public
+    System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]] listOfResultsForFiles : Public
+    System.Collections.Generic.List`1[System.Single] listOfAveragedIndividualResults : Public
     System.Collections.Generic.List`1[System.String] filesToExtract_B : Public
     System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]] listOfDictionaries_B : Public
     System.Collections.Generic.List`1[System.String] metadata : Public

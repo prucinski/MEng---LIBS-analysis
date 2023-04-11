@@ -34,6 +34,8 @@ public:
 	List<float>^ userSelectionsToKeys;							//A list which holds the user selections, but as keys that can be used with dictionaries.
 	List<int>^ userSelectionsIndexes;							//As dictionaries are unsorted, we need to keep track of the indexes as well.
 
+	List<Dictionary<float, float>^>^ listOfResultsForFiles;		//List holding results for selected wavelengths for each file.
+	List<float>^ listOfAveragedIndividualResults;				//List holding the individual results.
 	
 	//Calibration mode variables.
 	List<String^>^ filesToExtract_B;
@@ -77,11 +79,30 @@ public:
 		}
 		//loop through all the keys
 		try {
+			sw->Write("AVERAGE OF SUM OF FILES\n");
+			sw->Write("Highest key in range, result\n");
 			for each (float key in whatToSave->Keys) {
 				sw->Write(Convert::ToString(key));
 				sw->Write(',');
 				sw->Write(Convert::ToString(result[key]));
 				sw->Write('\n');
+			}
+			sw->Write("AVERAGE OF INDIVIDUAL HIGHEST WITHIN RANGE\n");
+			for each (float result in listOfAveragedIndividualResults) {
+				sw->Write(",,"+Convert::ToString(result));
+			}
+			sw->Write("\n");
+			sw->Write("Division of averaged first intensity over the other:,,"+Convert::ToString(returnDivisionFromTwoFirst(listOfAveragedIndividualResults))+"\n");
+			sw->Write("Individual results\n");
+			sw->Write("File no., wavelength, intensity\n");
+			int i = 1;
+			for each (Dictionary<float, float> ^ fileAsDictionary in listOfResultsForFiles) {
+				sw->Write("File " + (Convert::ToString(i)) + ",");
+				for each (float key in fileAsDictionary->Keys) {
+					sw->Write(Convert::ToString(key) + "," + Convert::ToString(fileAsDictionary[key])+",");
+				}
+				sw->Write("\n");
+				i++;
 			}
 		}
 		catch (...) {
@@ -111,26 +132,6 @@ public:
 		}
 		//write the header of the excel file.
 		try {
-			/* OBSOLETE CODE - REMOVE WHEN SURE - TODO
-			sw->Write("Divisions for acquisitions A, Average division value A, Concentration (ppm) A, dividend A, divisor A,");
-			sw->Write("Divisions for acquisitions B, Average division value B, Concentration (ppm) B,dividend B, divisor B\n");
-			//write the first row of the data.
-			sw->Write(Convert::ToString(divisionAcrossA[0])); sw->Write(",");
-			sw->Write(Convert::ToString(avgA)); sw->Write(",");
-			sw->Write(analyteA + ",");
-			sw->Write(Convert::ToString(userSelectionsToKeys[0])), sw->Write(",");
-			sw->Write(Convert::ToString(userSelectionsToKeys[1])); sw->Write(",");  //first row for A complete
-
-			sw->Write(Convert::ToString(divisionAcrossB[0])); sw->Write(",");
-			sw->Write(Convert::ToString(avgB)); sw->Write(",");
-			sw->Write(analyteB + ",");
-			if (userSelectionsToKeys->Count != 2) { sw->Write(Convert::ToString(userSelectionsToKeys[2])); }
-			else { sw->Write(Convert::ToString(userSelectionsToKeys[0])); }
-			sw->Write(",");
-			if (userSelectionsToKeys->Count != 2) { sw->Write(Convert::ToString(userSelectionsToKeys[3])); }
-			else { sw->Write(Convert::ToString(userSelectionsToKeys[1])); }
-			sw->Write("\n");
-			*/
 			int elems = numberOfValidSets(); int whichKey = 0;
 			bool differentDivisors = false;
 			if (userSelectionsToKeys->Count / 2 == elems) {
@@ -167,21 +168,7 @@ public:
 			return -1;
 		}
 
-		/*OBSOLETE CODE - TO REMOVE - TODO
-		* 
-		int i = 1;
-		while (i < divisionAcrossA->Count || i < divisionAcrossB->Count) {
-			if (i < divisionAcrossA->Count) {
-				sw->Write(Convert::ToString(divisionAcrossA[i]));
-			}
-			sw->Write(",,,,,");
-			if (i < divisionAcrossB->Count) {
-				sw->Write(Convert::ToString(divisionAcrossB[i]));
-			}
-			sw->Write(",,,,\n");
-			i++;
-		}
-		*/
+
 
 
 
@@ -506,56 +493,43 @@ private:
 	int findRequestedValues(int option, float range) {
 		//reset the "presentToUser" dictionary.
 		presentToUserResult = gcnew Dictionary<float, float>();
-		float rangeEachWay = range / 2, tempResult;
-		if (option == 2) { tempResult = 0;} else { tempResult = -9999; }
-		float currKey;
-		int index;
+		float rangeEachWay = range / 2;
+		//i must be kept track of - it indicates which key we're currently looking at
 		int i = 0;
 		for each (float key in userSelectionsToKeys) {
-			index = userSelectionsIndexes[i];
-			currKey = indexedKeys[index];
-			//left hand side of the selected point
-			while (Math::Abs(key - currKey) < rangeEachWay) {
-				if (option) {
-					tempResult = result[currKey] > tempResult ? result[currKey] : tempResult;
-				}
-				else {
-					tempResult += result[currKey];
-				}
-				if (index == 0) { break; }
-				index--;
-
-				currKey = indexedKeys[index];
-			}
-			//escaped the while loop. Now do it again, but the other way. Admittedly there is redundancy in this code.
-			index = userSelectionsIndexes[i];
-			currKey = indexedKeys[index + 1];
-			while (Math::Abs(key - currKey) < rangeEachWay) {
-				if (option) {
-					tempResult = result[currKey] > tempResult ? result[currKey] : tempResult;
-				}
-				else {
-					tempResult += result[currKey];
-				}
-				if (index == DATASIZE - LINESTOSKIP) {break;}
-				index++;
-				currKey = indexedKeys[index];
-			}
+			//first, find it for the averaged dictionaries
+			Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, result);
 			//now we have found the highest value. Add to the proper result dictionary.
-			if (presentToUserResult == nullptr) {
-				presentToUserResult = gcnew Dictionary<float, float>();
-			}
-			presentToUserResult->Add(key, tempResult);
+			presentToUserResult->Add(retVal->Item1, retVal->Item2);
 			i++;
-
 		}
+
+		//now, find the results for individual files
+		int j = 0;		//keeping track of which file we're in right now
+		listOfResultsForFiles = gcnew List<Dictionary<float, float>^>(listOfDictionaries->Count);
+		for each (Dictionary<float, float> ^ fileAsDictionary in listOfDictionaries) {
+			//TODO - have a size predetermined for this dictionary
+			listOfResultsForFiles->Add(gcnew Dictionary<float, float>());
+			i = 0;
+			for each (float key in userSelectionsToKeys) {
+				Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, fileAsDictionary);
+				listOfResultsForFiles[j]->Add(retVal->Item1, retVal->Item2);
+				i++;
+			}
+			j++;
+		}
+
+
+		//finally, average out the individual elements //TODO exception checking
+		averageIndividualKeyValuePairs(listOfResultsForFiles);
+
 		return 1;
 	}
 
 	//Count how many non-null elements there are in the sets
 	//Example: user supplies 4 values of wavelengths.
 	//However, user also claims there are 3 sets to process - but user only submitted to 
-	//set 1 and 3. This code works around tha
+	//set 1 and 3. This code works around that
 	int numberOfValidSets() {
 		int elems = 0;
 		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
@@ -639,6 +613,85 @@ private:
 		return 1;
 
 	}
+	//private function for finding the highest key IN a given set. Function results as a simplification of code when refractoring
+	System::Tuple<float,float>^ findHighestKeyValuePair(int i, float key, int option, float rangeEachWay, Dictionary<float,float>^ inputDict) {
+		int index = userSelectionsIndexes[i];
+		float currKey = indexedKeys[index];
+		float tempKey, tempResult;
+		if (option == 2) { tempResult = 0; tempKey = key;}
+		else { tempResult = -9999; tempKey = -1; }
+		while (Math::Abs(key - currKey) < rangeEachWay) {
+			if (option == 1) {
+				tempResult = inputDict[currKey] > tempResult ? inputDict[currKey] : tempResult;
+				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
+			}
+			else {
+				tempResult += inputDict[currKey];
+			}
+			if (index == 0) { break; }
+			index--;
+
+			currKey = indexedKeys[index];
+		}
+		//escaped the while loop. Now do it again, but the other way. Admittedly there is redundancy in this code.
+		index = userSelectionsIndexes[i];
+		currKey = indexedKeys[index + 1];
+		while (Math::Abs(key - currKey) < rangeEachWay) {
+			if (option == 1) {
+				tempResult = inputDict[currKey] > tempResult ? inputDict[currKey] : tempResult;
+				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
+
+			}
+			else {
+				tempResult += inputDict[currKey];
+			}
+			if (index == DATASIZE - LINESTOSKIP) { break; }
+			index++;
+			currKey = indexedKeys[index];
+		}
+		//finally, found the highest key & the value corresponding. Return
+		System::Tuple<float, float>^ retVal = gcnew Tuple<float, float>(tempKey, tempResult);
+		return retVal;
+	}
+
+	//function to be called privately to average the values for keys in same places
+	int averageIndividualKeyValuePairs(List<Dictionary<float, float>^>^ LOD) {
+		int i;
+		int howManyWavelengths = LOD[0]->Count;
+		listOfAveragedIndividualResults = gcnew List<float>(howManyWavelengths); 
+		for (int i = 0; i < howManyWavelengths; i++) {
+			listOfAveragedIndividualResults->Add(0);
+		}
+		for each(Dictionary<float,float>^ dict in LOD) {
+			i = 0;
+			for each (float key in dict->Keys) {
+				listOfAveragedIndividualResults[i] += dict[key];
+				i++;
+			}
+		}
+		//now we have our list; divide each item by times called
+		for (int i = 0; i < howManyWavelengths; i++) {
+			listOfAveragedIndividualResults[i] = listOfAveragedIndividualResults[i] / LOD->Count;
+		}
+
+		//success
+		return 1;
+	}
+
+	//function to return a division of two first values from list
+	float returnDivisionFromTwoFirst(List<float>^ givenList) {
+		if (givenList->Count < 2) {
+			return 0;
+		}
+		if (givenList[0] > givenList[1]) {
+			return givenList[0] / givenList[1];
+		}
+		else {
+			return givenList[1] / givenList[0];
+		}
+	}
+
+
 	
 
 
