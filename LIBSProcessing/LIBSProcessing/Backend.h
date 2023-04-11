@@ -77,7 +77,7 @@ public:
 		catch (...) {
 			return 0;
 		}
-		//loop through all the keys
+		//loop through all the keyss
 		try {
 			sw->Write("AVERAGE OF SUM OF FILES\n");
 			sw->Write("Highest key in range, result\n");
