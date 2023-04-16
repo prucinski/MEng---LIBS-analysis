@@ -768,7 +768,7 @@ namespace LIBSProcessing {
 		}
 		//Perform operations to retrieve division information 
 		if (calibrationToolStripMenuItem->Checked) {
-			b.getRequestedSpectraCalibrationMode();
+			b.getRequestedSpectraCalibrationMode(option, range);
 			Rscore->Text = "R^2 score: " + Convert::ToString(b.getRSquared());
 		}
 		//standard mode operation
@@ -959,7 +959,7 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		setsOfData_label->Enabled = !value;
 		//left hand side
 		label3->Enabled = value;
-		rangeInput->Enabled = value;
+		//rangeInput->Enabled = value;
 		setNumbersLabel->Enabled = !value;
 		saveSelectedBox->Enabled = value;
 

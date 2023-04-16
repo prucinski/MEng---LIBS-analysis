@@ -42,7 +42,7 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     initializeSets(Int32): PrivateScope, Public, HideBySig
     addSetToSets(Single, Int32, Single): PrivateScope, Public, HideBySig
     getRequestedSpectraStandardMode(Int32, Single): PrivateScope, Public, HideBySig
-    getRequestedSpectraCalibrationMode(): PrivateScope, Public, HideBySig
+    getRequestedSpectraCalibrationMode(Int32, Single): PrivateScope, Public, HideBySig
     getAveragedSpectra(): PrivateScope, Public, HideBySig
     addWavelength(Single): PrivateScope, Public, HideBySig
     removeWavelength(Single): PrivateScope, Public, HideBySig

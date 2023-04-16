@@ -245,7 +245,7 @@ public:
 		return 1;
 	}
 
-	int getRequestedSpectraCalibrationMode() {
+	int getRequestedSpectraCalibrationMode(int option, float range) {
 		//if we have less than 1 item, discard. We will check for whether each set has it's own wavelengths later.
 		if (selectedWavelengths->Count < 1) {
 			return 0;
@@ -521,7 +521,12 @@ private:
 
 
 		//finally, average out the individual elements //TODO exception checking
-		averageIndividualKeyValuePairs(listOfResultsForFiles);
+		listOfAveragedIndividualResults = averageIndividualKeyValuePairs(listOfResultsForFiles);
+
+		return 1;
+	}
+
+	int findRequestedValuesCalibration(int option, float range) {
 
 		return 1;
 	}
@@ -655,27 +660,27 @@ private:
 	}
 
 	//function to be called privately to average the values for keys in same places
-	int averageIndividualKeyValuePairs(List<Dictionary<float, float>^>^ LOD) {
+	List<float>^ averageIndividualKeyValuePairs(List<Dictionary<float, float>^>^ LOD) {
 		int i;
 		int howManyWavelengths = LOD[0]->Count;
-		listOfAveragedIndividualResults = gcnew List<float>(howManyWavelengths); 
+		List<float>^ pointerToResult = gcnew List<float>(howManyWavelengths);
 		for (int i = 0; i < howManyWavelengths; i++) {
-			listOfAveragedIndividualResults->Add(0);
+			pointerToResult->Add(0);
 		}
 		for each(Dictionary<float,float>^ dict in LOD) {
 			i = 0;
 			for each (float key in dict->Keys) {
-				listOfAveragedIndividualResults[i] += dict[key];
+				pointerToResult[i] += dict[key];
 				i++;
 			}
 		}
 		//now we have our list; divide each item by times called
 		for (int i = 0; i < howManyWavelengths; i++) {
-			listOfAveragedIndividualResults[i] = listOfAveragedIndividualResults[i] / LOD->Count;
+			pointerToResult[i] = pointerToResult[i] / LOD->Count;
 		}
 
 		//success
-		return 1;
+		return pointerToResult;
 	}
 
 	//function to return a division of two first values from list
