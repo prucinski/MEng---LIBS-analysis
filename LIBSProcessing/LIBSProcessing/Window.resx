@@ -120,6 +120,11 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>15, 26</value>
   </metadata>
+  <data name="setNumbersLabel.ToolTip" xml:space="preserve">
+    <value>If one ratio is supplied, it will be applied to all sets.
+If one wavelength is supplied, no division will be performed.  
+3rd and 4th can be left blank; the dividing wavelengths for other sets will remain the same as for set A.</value>
+  </data>
   <metadata name="folderBrowser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>130, 25</value>
   </metadata>

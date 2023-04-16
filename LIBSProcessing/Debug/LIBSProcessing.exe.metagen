@@ -35,6 +35,9 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]]] listOfSets : Public
     System.Collections.Generic.List`1[System.Single] listOfConcentrations : Public
     System.Collections.Generic.List`1[System.Single] listOfAverages : Public
+    System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.Collections.Generic.Dictionary`2[System.Single,System.Single]]] listOfProcessedSets : Public
+    System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.Single]] listOfAveragedIndividualResults_sets : Public
+    Single global_r2 : Public
   Methods:
     saveToFile(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     saveToFileCalibration(String, String, String): PrivateScope, Public, HideBySig

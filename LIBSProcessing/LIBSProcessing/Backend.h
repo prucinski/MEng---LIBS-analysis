@@ -38,16 +38,19 @@ public:
 	List<float>^ listOfAveragedIndividualResults;				//List holding the individual results.
 	
 	//Calibration mode variables.
-	List<String^>^ filesToExtract_B;
+	List<String^>^ filesToExtract_B;							//Temporarily selected files & temporarily initialized dictionary when user is selecting.
 	List<Dictionary<float, float>^>^ listOfDictionaries_B;
 
 	//multi-set processing.
-	List<String^>^ metadata;
-	List< List<Dictionary<float, float>^>^>^ listOfSets;
-	List<float>^ listOfConcentrations;
-	List<float>^ listOfAverages;
+	List<String^>^ metadata;									//Metadata about a set to be displayed about a given set.						
+	List< List<Dictionary<float, float>^>^>^ listOfSets;		//Processed files as sets inside of a list.
+	List<float>^ listOfConcentrations;							//Concentrations as supplied by the user.
+	List<float>^ listOfAverages;								//result of average division of first wavelength/second wavelength for each set of files.
 
+	List< List<Dictionary<float, float>^>^>^ listOfProcessedSets;	//List holding results for selected wavlengths for each file, for each set.
+	List<List<float>^>^ listOfAveragedIndividualResults_sets;		//List holding individual results for each file for each set - average from division.
 
+	float global_r2;
 	Backend() {
 		directory = Application::StartupPath;
 		//for now.
@@ -138,7 +141,7 @@ public:
 				differentDivisors = true;
 			}
 			//write headers
-			sw->Write(",Average of sums from division,");
+			sw->Write(",Average (sum first intensity then sum second intensity then divide one by the other),");
 			sw->Write("dividend,");
 			sw->Write("divisor,");
 			sw->Write("Concentration\n");
@@ -160,6 +163,25 @@ public:
 					sw->Write(Convert::ToString(userSelectionsToKeys[1])+",");
 				}
 				sw->Write(Convert::ToString(listOfConcentrations[i])+"\n");
+			}
+			sw->Write("R2 score," + Convert::ToString(global_r2)+"\n");
+			sw->Write("Individual results\n");
+			sw->Write("File no., wavelength, intensity\n");
+			for (int i = 0; i < metadata->Count; i++) {
+				sw->Write("S" + Convert::ToString(i + 1) + "\n");
+				if (listOfAverages[i] == -1) {
+					sw->Write(",,,");
+					continue;
+				}
+				int j = 1;
+				for each (Dictionary<float, float> ^ fileAsDictionary in listOfProcessedSets[i]) {
+					sw->Write("File " + (Convert::ToString(j)) + ",");
+					for each (float key in fileAsDictionary->Keys) {
+						sw->Write(Convert::ToString(key) + "," + Convert::ToString(fileAsDictionary[key]) + ",");
+						j++;
+					}
+					sw->Write("\n");
+				}
 			}
 		}
 		catch (...) {
@@ -252,7 +274,7 @@ public:
 		}
 		//first, keys CLOSEST to the value that the user input must be found.
 		findKeys();
-		findDivisionValues();
+		findRequestedValuesCalibration(option, range);
 		return 1;
 	}
 
@@ -313,6 +335,7 @@ public:
 		divisor = sumC * sumI;
 		//3. Finally, caluclate the R score.
 		float R = div / divisor;
+		global_r2 = R * R;
 		return R * R;
 		
 	}
@@ -518,58 +541,16 @@ private:
 			}
 			j++;
 		}
-
-
-		//finally, average out the individual elements //TODO exception checking
+		//finally, average out the individual elements 
 		listOfAveragedIndividualResults = averageIndividualKeyValuePairs(listOfResultsForFiles);
-
 		return 1;
 	}
 
 	int findRequestedValuesCalibration(int option, float range) {
-
-		return 1;
-	}
-
-	//Count how many non-null elements there are in the sets
-	//Example: user supplies 4 values of wavelengths.
-	//However, user also claims there are 3 sets to process - but user only submitted to 
-	//set 1 and 3. This code works around that
-	int numberOfValidSets() {
-		int elems = 0;
-		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
-			if (set != nullptr) { elems++; }
-		}
-		return elems;
-	}
-
-
-	//find the division values and save them to an array. Function to be called after there is at least 1
-	//key selected by the user.
-	int findDivisionValues() {
-
-		/** OBSOLETE CODE, WILL REMOVE LATER - TODO. Keeping it now in case I need to revisit division
-		* AcrossA.
-		divisionAcrossA = gcnew List<float>(listOfDictionaries->Count);
-		divisionAcrossB = gcnew List<float>(listOfDictionaries_B->Count);
-		float divisorA, divisorB, dividendA, dividendB;
-		if (userSelectionsToKeys->Count == 2) {
-			divisorA = divisorB = userSelectionsToKeys[1];
-			dividendA = dividendB = userSelectionsToKeys[0];
-		}
-		else {
-			divisorA = userSelectionsToKeys[1];
-			dividendA = userSelectionsToKeys[0];
-			divisorB = userSelectionsToKeys[3];
-			dividendB = userSelectionsToKeys[2];
-		}
-		**/
+		float rangeEachWay = range / 2;
+		//first, we must measure what kind of values have been selected in the "Currently selected wavelengths" box...
 		bool differentDivisors = false;
 		int elems = numberOfValidSets();
-		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
-			if (set != nullptr) { elems++;}
-		}
-
 		//check if we have as many selected pairs of wavelengths as sets
 		if (userSelectionsToKeys->Count / 2 == elems) {
 			differentDivisors = true;
@@ -590,34 +571,79 @@ private:
 			singleMode = true;
 		}
 
-		//outer loop - run through all the sets of files.
 		else if (!differentDivisors) {
 			dividend = userSelectionsToKeys[0];
 			divisor = userSelectionsToKeys[1];
 		}
+		//...We have now measured what kind of values have been selected in the "Currently selected wavelengths" box.
+		//outer loop - run through all the sets of files.
+		listOfProcessedSets = gcnew List<List<Dictionary<float, float>^>^>();
+		int i, j = 0;
 		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
+			j = 0;
+			listOfProcessedSets->Add(gcnew List <Dictionary<float, float>^>());
 			//first, handle the first dictionary.
 			if (set == nullptr) {
-				curr++;
+				i++;
 				continue;
 
 			}
-			float runningSum = 0, res;
-			for each (Dictionary<float, float> ^ dict in set) {
-				if (differentDivisors) {
-					dividend = userSelectionsToKeys[whichKey];
-					divisor = userSelectionsToKeys[whichKey + 1];
-					whichKey += 2;
-				}
-				res = dict[dividend] /  (singleMode ? 1 : dict[divisor]);
-				runningSum += res;
+			if (differentDivisors) {
+				dividend = userSelectionsToKeys[whichKey];
+				divisor = userSelectionsToKeys[whichKey + 1];
+				whichKey += 2;
 			}
-			listOfAverages[curr] = runningSum / listOfDictionaries->Count;
-			curr++;
+			for each (Dictionary<float, float> ^ fileAsDictionary in set) {
+				listOfProcessedSets[i]->Add(gcnew Dictionary<float, float> ());
+
+				//We now definitely have the correct key for dividend and divisor - now, find the highest key/value pair within range
+				Tuple<float, float>^ retValDividend = findHighestKeyValuePair(whichKey, dividend, option, rangeEachWay, fileAsDictionary);
+				Tuple<float, float>^ retValDivisor;
+				if (!singleMode) { retValDivisor = findHighestKeyValuePair(whichKey+1, divisor, option, rangeEachWay, fileAsDictionary); }
+				//res = dict[dividend] / (singleMode ? 1 : dict[divisor]);
+				//runningSum += res;
+				//pointer - will retain information
+				List<Dictionary<float, float>^>^ temp = listOfProcessedSets[i];
+				temp[j]->Add(retValDividend->Item1, retValDividend->Item2);
+				if (!singleMode) {
+					temp[j]->Add(retValDivisor->Item1, retValDivisor->Item2);
+				}
+				else{
+					//adding a value of 1 with a key of 1 to divide by 1 for result. Key of 1 works as a flag
+					temp[j]->Add(1, 1);
+				}
+				
+				j++;
+			}
+			if (differentDivisors) {
+				whichKey += 2;
+			}
+			i++;
+		}
+		//we have now found the wavelength of biggest intensity in  range. We may proceed to calculating the averages for each set.
+		listOfAveragedIndividualResults_sets = gcnew  List<List<float>^>();
+		i = 0;
+		for each (List<Dictionary<float, float>^> ^ set  in listOfProcessedSets) {
+			listOfAveragedIndividualResults_sets->Add(averageIndividualKeyValuePairs(set));
+			//there will actually be only two pieces of information in each list anyway, making this perfect
+			listOfAverages[i] = returnDivisionFromTwoFirst(listOfAveragedIndividualResults_sets[i]);
+			i++;
 		}
 		return 1;
-
 	}
+
+	//Count how many non-null elements there are in the sets
+	//Example: user supplies 4 values of wavelengths.
+	//However, user also claims there are 3 sets to process - but user only submitted to 
+	//set 1 and 3. This code works around that
+	int numberOfValidSets() {
+		int elems = 0;
+		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
+			if (set != nullptr) { elems++; }
+		}
+		return elems;
+	}
+
 	//private function for finding the highest key IN a given set. Function results as a simplification of code when refractoring
 	System::Tuple<float,float>^ findHighestKeyValuePair(int i, float key, int option, float rangeEachWay, Dictionary<float,float>^ inputDict) {
 		int index = userSelectionsIndexes[i];

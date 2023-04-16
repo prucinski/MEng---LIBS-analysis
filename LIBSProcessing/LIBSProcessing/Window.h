@@ -84,14 +84,14 @@ namespace LIBSProcessing {
 		}
 
 	protected:
-	private: System::Windows::Forms::Label^ label1;
+
 	private: System::Windows::Forms::TextBox^ waveEdit;
 
 	private: System::Windows::Forms::Button^ waveSubmit;
 
 	private: System::Windows::Forms::Label^ label2;
-	private: System::Windows::Forms::Button^ elemSubmit;
-	private: System::Windows::Forms::ComboBox^ elemDropdown;
+
+
 	private: System::Windows::Forms::TextBox^ rangeInput;
 	private: System::Windows::Forms::Label^ label3;
 
@@ -133,12 +133,10 @@ namespace LIBSProcessing {
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
-			this->label1 = (gcnew System::Windows::Forms::Label());
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Window::typeid));
 			this->waveEdit = (gcnew System::Windows::Forms::TextBox());
 			this->waveSubmit = (gcnew System::Windows::Forms::Button());
 			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->elemSubmit = (gcnew System::Windows::Forms::Button());
-			this->elemDropdown = (gcnew System::Windows::Forms::ComboBox());
 			this->rangeInput = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
@@ -188,25 +186,16 @@ namespace LIBSProcessing {
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
-			// label1
-			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(12, 24);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(194, 13);
-			this->label1->TabIndex = 1;
-			this->label1->Text = L"Add element (to be filled with db entries)";
-			// 
 			// waveEdit
 			// 
-			this->waveEdit->Location = System::Drawing::Point(12, 96);
+			this->waveEdit->Location = System::Drawing::Point(12, 46);
 			this->waveEdit->Name = L"waveEdit";
 			this->waveEdit->Size = System::Drawing::Size(100, 20);
 			this->waveEdit->TabIndex = 2;
 			// 
 			// waveSubmit
 			// 
-			this->waveSubmit->Location = System::Drawing::Point(133, 93);
+			this->waveSubmit->Location = System::Drawing::Point(133, 43);
 			this->waveSubmit->Name = L"waveSubmit";
 			this->waveSubmit->Size = System::Drawing::Size(75, 23);
 			this->waveSubmit->TabIndex = 3;
@@ -217,34 +206,15 @@ namespace LIBSProcessing {
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(9, 77);
+			this->label2->Location = System::Drawing::Point(9, 27);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(89, 13);
 			this->label2->TabIndex = 4;
 			this->label2->Text = L"Add wavelengths";
 			// 
-			// elemSubmit
-			// 
-			this->elemSubmit->Location = System::Drawing::Point(133, 43);
-			this->elemSubmit->Name = L"elemSubmit";
-			this->elemSubmit->Size = System::Drawing::Size(75, 23);
-			this->elemSubmit->TabIndex = 5;
-			this->elemSubmit->Text = L"Submit";
-			this->elemSubmit->UseVisualStyleBackColor = true;
-			this->elemSubmit->Click += gcnew System::EventHandler(this, &Window::elemSubmit_Click);
-			// 
-			// elemDropdown
-			// 
-			this->elemDropdown->FormattingEnabled = true;
-			this->elemDropdown->Location = System::Drawing::Point(12, 43);
-			this->elemDropdown->MaxDropDownItems = 100;
-			this->elemDropdown->Name = L"elemDropdown";
-			this->elemDropdown->Size = System::Drawing::Size(100, 21);
-			this->elemDropdown->TabIndex = 0;
-			// 
 			// rangeInput
 			// 
-			this->rangeInput->Location = System::Drawing::Point(12, 151);
+			this->rangeInput->Location = System::Drawing::Point(12, 101);
 			this->rangeInput->Name = L"rangeInput";
 			this->rangeInput->Size = System::Drawing::Size(100, 20);
 			this->rangeInput->TabIndex = 6;
@@ -253,7 +223,7 @@ namespace LIBSProcessing {
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(9, 135);
+			this->label3->Location = System::Drawing::Point(9, 85);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(118, 13);
 			this->label3->TabIndex = 7;
@@ -280,19 +250,17 @@ namespace LIBSProcessing {
 			// 
 			this->setNumbersLabel->AutoSize = true;
 			this->setNumbersLabel->Enabled = false;
-			this->setNumbersLabel->Location = System::Drawing::Point(9, 224);
+			this->setNumbersLabel->Location = System::Drawing::Point(9, 174);
 			this->setNumbersLabel->Name = L"setNumbersLabel";
 			this->setNumbersLabel->Size = System::Drawing::Size(161, 26);
 			this->setNumbersLabel->TabIndex = 44;
 			this->setNumbersLabel->Text = L"Set 1: 1st/2nd; Set 2: 3rd/4th... \r\n Hover over for more information.";
-			this->toolTip1->SetToolTip(this->setNumbersLabel, L"If one ratio is supplied, it will be applied to all sets.\r\nIf one wavelength is"
-				L" supplied, no division will be performed.  \r\n3rd and 4th can be left blank; the dividing wavelengths for other sets "
-				L"will remain the same as for set A.");
+			this->toolTip1->SetToolTip(this->setNumbersLabel, resources->GetString(L"setNumbersLabel.ToolTip"));
 			// 
 			// allWavelenghts
 			// 
 			this->allWavelenghts->FormattingEnabled = true;
-			this->allWavelenghts->Location = System::Drawing::Point(12, 198);
+			this->allWavelenghts->Location = System::Drawing::Point(12, 148);
 			this->allWavelenghts->MaxDropDownItems = 100;
 			this->allWavelenghts->Name = L"allWavelenghts";
 			this->allWavelenghts->Size = System::Drawing::Size(100, 21);
@@ -301,7 +269,7 @@ namespace LIBSProcessing {
 			// label4
 			// 
 			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(9, 182);
+			this->label4->Location = System::Drawing::Point(9, 132);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(154, 13);
 			this->label4->TabIndex = 10;
@@ -309,7 +277,7 @@ namespace LIBSProcessing {
 			// 
 			// removeWave
 			// 
-			this->removeWave->Location = System::Drawing::Point(133, 198);
+			this->removeWave->Location = System::Drawing::Point(133, 148);
 			this->removeWave->Name = L"removeWave";
 			this->removeWave->Size = System::Drawing::Size(75, 23);
 			this->removeWave->TabIndex = 11;
@@ -420,7 +388,7 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->AutoSize = true;
 			this->saveSelectedBox->Checked = true;
 			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->saveSelectedBox->Location = System::Drawing::Point(12, 260);
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 210);
 			this->saveSelectedBox->Name = L"saveSelectedBox";
 			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
 			this->saveSelectedBox->TabIndex = 23;
@@ -453,7 +421,7 @@ namespace LIBSProcessing {
 			// 
 			this->groupBox1->Controls->Add(this->highestCheckbox);
 			this->groupBox1->Controls->Add(this->sumCheckbox);
-			this->groupBox1->Location = System::Drawing::Point(132, 130);
+			this->groupBox1->Location = System::Drawing::Point(132, 80);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(103, 49);
 			this->groupBox1->TabIndex = 28;
@@ -682,12 +650,9 @@ namespace LIBSProcessing {
 			this->Controls->Add(this->allWavelenghts);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->rangeInput);
-			this->Controls->Add(this->elemSubmit);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->waveSubmit);
 			this->Controls->Add(this->waveEdit);
-			this->Controls->Add(this->label1);
-			this->Controls->Add(this->elemDropdown);
 			this->Controls->Add(this->menuStrip1);
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"Window";
