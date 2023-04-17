@@ -20,6 +20,7 @@ namespace LIBSProcessing {
 		Window(void)
 		{
 			InitializeComponent();
+			nameOfFile->Text = System::DateTime::Now.ToString("dd_MM_hhmm")+".csv";
 			//Initializing the backend here.
 
 			
@@ -433,9 +434,9 @@ namespace LIBSProcessing {
 			// 
 			this->groupBox1->Controls->Add(this->highestCheckbox);
 			this->groupBox1->Controls->Add(this->sumCheckbox);
-			this->groupBox1->Location = System::Drawing::Point(132, 61);
+			this->groupBox1->Location = System::Drawing::Point(132, 67);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(103, 49);
+			this->groupBox1->Size = System::Drawing::Size(103, 43);
 			this->groupBox1->TabIndex = 28;
 			this->groupBox1->TabStop = false;
 			// 
@@ -833,7 +834,7 @@ namespace LIBSProcessing {
 		}
 		//standard mode saving.
 		else {
-			int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked);
+			int success = b.saveToFile(nameOfFile->Text, saveSelectedBox->Checked, lowerRangeYes->Checked);
 			if (success == 0) {
 				MessageBox::Show("Error - file was unable to be saved with name " + b.nameOfFile);
 			}

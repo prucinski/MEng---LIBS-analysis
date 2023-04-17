@@ -60,7 +60,7 @@ public:
 	}
 
 
-	int saveToFile(String^ name, bool selectedOnly) {
+	int saveToFile(String^ name, bool selectedOnly, bool lowestPoint) {
 		//see if user put in any input; if not, do a default
 		if (name) {
 			nameOfFile = "\\"+name;
@@ -82,7 +82,7 @@ public:
 		}
 		//loop through all the keyss
 		try {
-			sw->Write("AVERAGE OF SUM OF FILES\n");
+			sw->Write("AVERAGE OF SUM OF FILES,\n");
 			sw->Write("Highest key in range, result\n");
 			for each (float key in whatToSave->Keys) {
 				sw->Write(Convert::ToString(key));
@@ -91,18 +91,57 @@ public:
 				sw->Write('\n');
 			}
 			sw->Write("AVERAGE OF INDIVIDUAL HIGHEST WITHIN RANGE\n");
+			int i = 0, j = 0;
+			sw->Write("Key,Result\n");
 			for each (float result in listOfAveragedIndividualResults) {
-				sw->Write(",,"+Convert::ToString(result));
+				if (i % 2 != 0 && lowestPoint) {
+					i++;
+					continue;
+				}
+				sw->Write(Convert::ToString(userSelectionsToKeys[j])+","+Convert::ToString(result)+",");
+				i++;
+				j++;
 			}
 			sw->Write("\n");
-			sw->Write("Division of averaged first intensity over the other:,,"+Convert::ToString(returnDivisionFromTwoFirst(listOfAveragedIndividualResults))+"\n");
-			sw->Write("Individual results\n");
-			sw->Write("File no., wavelength, intensity\n");
-			int i = 1;
+			sw->Write("Division of averaged first intensity over the other:,,,,,"+Convert::ToString(returnDivisionFromTwoFirst(listOfAveragedIndividualResults))+"\n\n");
+			sw->Write("(Individual results\n");
+			if (lowestPoint) {
+				sw->Write(",,,,(optional),(optional)\n");
+			}
+
+			if (lowestPoint) {
+				sw->Write("File no., wavelength, intensity,Lowest key in range, result,peak?\n");
+			}
+			else {
+				sw->Write("File no., wavelength,intensity,\n");
+			}
+
+			i = 1;
 			for each (Dictionary<float, float> ^ fileAsDictionary in listOfResultsForFiles) {
 				sw->Write("File " + (Convert::ToString(i)) + ",");
+				//this is quite bad, as no calculations should be done inside this function. However, I am too tired to do it otherwise right now.
+				j = 0;
+				float tempHighest, tempLowest;
+
 				for each (float key in fileAsDictionary->Keys) {
+					if (lowestPoint) {
+						if (j %2 == 0) {
+							tempHighest = fileAsDictionary[key];
+						}
+						if (j % 2 != 0) {
+							tempLowest = fileAsDictionary[key];
+						}
+					}
 					sw->Write(Convert::ToString(key) + "," + Convert::ToString(fileAsDictionary[key])+",");
+					j++;
+					if (j % 2 == 0 && j > 0) {
+						if (tempHighest > 3 * tempLowest) {
+							sw->Write("yes,");
+						}
+						else {
+							sw->Write("no,");
+						}
+					}
 				}
 				sw->Write("\n");
 				i++;
@@ -536,7 +575,14 @@ private:
 			i = 0;
 			for each (float key in userSelectionsToKeys) {
 				Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, true, fileAsDictionary);
+				Tuple<float, float>^ retValLower;
+				if (doLowerRange) {
+					retValLower = findHighestKeyValuePair(i, key, option, lowerRange/2, false, fileAsDictionary);
+				}
 				listOfResultsForFiles[j]->Add(retVal->Item1, retVal->Item2);
+				if (doLowerRange) {
+					listOfResultsForFiles[j]->Add(retValLower->Item1, retValLower->Item2);
+				}
 				i++;
 			}
 			j++;
@@ -598,14 +644,16 @@ private:
 
 				//We now definitely have the correct key for dividend and divisor - now, find the highest key/value pair within range
 				Tuple<float, float>^ retValDividend = findHighestKeyValuePair(whichKey, dividend, option, rangeEachWay, true, fileAsDictionary);
+				Tuple<float, float>^ retValDividendLower;
+				Tuple<float, float>^ retValDividerLower;
 				if (doLowerRange) {
-					Tuple<float, float>^ retValDividendLower = findHighestKeyValuePair(whichKey, dividend, option, rangeEachWay, false, fileAsDictionary);
+					retValDividendLower = findHighestKeyValuePair(whichKey, dividend, option, lowerRange/2, false, fileAsDictionary);
 				}
 				Tuple<float, float>^ retValDivisor;
 				if (!singleMode) {
 					retValDivisor = findHighestKeyValuePair(whichKey+1, divisor, option, rangeEachWay, true, fileAsDictionary);
 					if (doLowerRange) {
-
+						 retValDividerLower = findHighestKeyValuePair(whichKey, divisor, option, lowerRange / 2, false, fileAsDictionary);
 					}
 				}
 				//res = dict[dividend] / (singleMode ? 1 : dict[divisor]);
@@ -619,6 +667,13 @@ private:
 				else{
 					//adding a value of 1 with a key of 1 to divide by 1 for result. Key of 1 works as a flag
 					temp[j]->Add(1, 1);
+				}
+				if (doLowerRange) {
+					//third and fourth column will be reserved for the smallest value within the given range.
+					temp[j]->Add(retValDividendLower->Item1, retValDividendLower->Item2);
+					if (!singleMode) {
+						temp[j]->Add(retValDividerLower->Item1, retValDividerLower->Item2);
+					}
 				}
 				
 				j++;
@@ -663,15 +718,15 @@ private:
 		else if (option == 1) { tempResult = -9999; tempKey = -1; }
 		else if (option == 2) { tempResult = 0; tempKey = key;}
 		while (Math::Abs(key - currKey) < rangeEachWay) {
-			if (option == 1) {
-				tempResult = inputDict[currKey] > tempResult ? inputDict[currKey] : tempResult;
-				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
-			}
-			else if (!whichDir) {
+			//if we're finding the lowest value, we ignore what option was selected (by design)
+			 if (!whichDir) {
 				tempResult = inputDict[currKey] < tempResult ? inputDict[currKey] : tempResult;
 				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
 			}
-
+			else if (option == 1) {
+				tempResult = inputDict[currKey] > tempResult ? inputDict[currKey] : tempResult;
+				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
+			}
 			else {
 				tempResult += inputDict[currKey];
 			}

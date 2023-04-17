@@ -39,7 +39,7 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.Single]] listOfAveragedIndividualResults_sets : Public
     Single global_r2 : Public
   Methods:
-    saveToFile(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
+    saveToFile(String, Boolean(HasFieldMarshal), Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     saveToFileCalibration(String, String, String): PrivateScope, Public, HideBySig
     loadFiles(String[], Single, Int32): PrivateScope, Public, HideBySig
     initializeSets(Int32): PrivateScope, Public, HideBySig
