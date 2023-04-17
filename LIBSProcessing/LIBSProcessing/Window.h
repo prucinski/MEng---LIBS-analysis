@@ -61,6 +61,12 @@ namespace LIBSProcessing {
 	private: System::Windows::Forms::Label^ setsOfData_label;
 	private: System::Windows::Forms::Button^ addSetButton;
 	private: System::Windows::Forms::Label^ Rscore;
+	private: System::Windows::Forms::TextBox^ rangeLowerInput;
+	private: System::Windows::Forms::Label^ label1;
+	private: System::Windows::Forms::GroupBox^ groupBox2;
+	private: System::Windows::Forms::RadioButton^ lowerRangeYes;
+
+	private: System::Windows::Forms::RadioButton^ radioButton2;
 
 
 
@@ -182,8 +188,14 @@ namespace LIBSProcessing {
 			this->setsOfData_label = (gcnew System::Windows::Forms::Label());
 			this->addSetButton = (gcnew System::Windows::Forms::Button());
 			this->Rscore = (gcnew System::Windows::Forms::Label());
+			this->rangeLowerInput = (gcnew System::Windows::Forms::TextBox());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->lowerRangeYes = (gcnew System::Windows::Forms::RadioButton());
+			this->radioButton2 = (gcnew System::Windows::Forms::RadioButton());
 			this->groupBox1->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
+			this->groupBox2->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// waveEdit
@@ -214,7 +226,7 @@ namespace LIBSProcessing {
 			// 
 			// rangeInput
 			// 
-			this->rangeInput->Location = System::Drawing::Point(12, 101);
+			this->rangeInput->Location = System::Drawing::Point(12, 88);
 			this->rangeInput->Name = L"rangeInput";
 			this->rangeInput->Size = System::Drawing::Size(100, 20);
 			this->rangeInput->TabIndex = 6;
@@ -223,7 +235,7 @@ namespace LIBSProcessing {
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(9, 85);
+			this->label3->Location = System::Drawing::Point(9, 72);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(118, 13);
 			this->label3->TabIndex = 7;
@@ -250,7 +262,7 @@ namespace LIBSProcessing {
 			// 
 			this->setNumbersLabel->AutoSize = true;
 			this->setNumbersLabel->Enabled = false;
-			this->setNumbersLabel->Location = System::Drawing::Point(9, 174);
+			this->setNumbersLabel->Location = System::Drawing::Point(9, 201);
 			this->setNumbersLabel->Name = L"setNumbersLabel";
 			this->setNumbersLabel->Size = System::Drawing::Size(161, 26);
 			this->setNumbersLabel->TabIndex = 44;
@@ -260,7 +272,7 @@ namespace LIBSProcessing {
 			// allWavelenghts
 			// 
 			this->allWavelenghts->FormattingEnabled = true;
-			this->allWavelenghts->Location = System::Drawing::Point(12, 148);
+			this->allWavelenghts->Location = System::Drawing::Point(12, 175);
 			this->allWavelenghts->MaxDropDownItems = 100;
 			this->allWavelenghts->Name = L"allWavelenghts";
 			this->allWavelenghts->Size = System::Drawing::Size(100, 21);
@@ -269,7 +281,7 @@ namespace LIBSProcessing {
 			// label4
 			// 
 			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(9, 132);
+			this->label4->Location = System::Drawing::Point(9, 159);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(154, 13);
 			this->label4->TabIndex = 10;
@@ -277,7 +289,7 @@ namespace LIBSProcessing {
 			// 
 			// removeWave
 			// 
-			this->removeWave->Location = System::Drawing::Point(133, 148);
+			this->removeWave->Location = System::Drawing::Point(133, 175);
 			this->removeWave->Name = L"removeWave";
 			this->removeWave->Size = System::Drawing::Size(75, 23);
 			this->removeWave->TabIndex = 11;
@@ -388,7 +400,7 @@ namespace LIBSProcessing {
 			this->saveSelectedBox->AutoSize = true;
 			this->saveSelectedBox->Checked = true;
 			this->saveSelectedBox->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->saveSelectedBox->Location = System::Drawing::Point(12, 210);
+			this->saveSelectedBox->Location = System::Drawing::Point(12, 237);
 			this->saveSelectedBox->Name = L"saveSelectedBox";
 			this->saveSelectedBox->Size = System::Drawing::Size(179, 17);
 			this->saveSelectedBox->TabIndex = 23;
@@ -421,7 +433,7 @@ namespace LIBSProcessing {
 			// 
 			this->groupBox1->Controls->Add(this->highestCheckbox);
 			this->groupBox1->Controls->Add(this->sumCheckbox);
-			this->groupBox1->Location = System::Drawing::Point(132, 80);
+			this->groupBox1->Location = System::Drawing::Point(132, 61);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(103, 49);
 			this->groupBox1->TabIndex = 28;
@@ -610,11 +622,63 @@ namespace LIBSProcessing {
 			this->Rscore->Size = System::Drawing::Size(0, 13);
 			this->Rscore->TabIndex = 51;
 			// 
+			// rangeLowerInput
+			// 
+			this->rangeLowerInput->Location = System::Drawing::Point(12, 129);
+			this->rangeLowerInput->Name = L"rangeLowerInput";
+			this->rangeLowerInput->Size = System::Drawing::Size(100, 20);
+			this->rangeLowerInput->TabIndex = 52;
+			this->rangeLowerInput->Text = L"0.2";
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(9, 113);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(147, 13);
+			this->label1->TabIndex = 53;
+			this->label1->Text = L"Range for finding lowest point";
+			// 
+			// groupBox2
+			// 
+			this->groupBox2->Controls->Add(this->lowerRangeYes);
+			this->groupBox2->Controls->Add(this->radioButton2);
+			this->groupBox2->Location = System::Drawing::Point(176, 113);
+			this->groupBox2->Name = L"groupBox2";
+			this->groupBox2->Size = System::Drawing::Size(59, 49);
+			this->groupBox2->TabIndex = 29;
+			this->groupBox2->TabStop = false;
+			// 
+			// lowerRangeYes
+			// 
+			this->lowerRangeYes->AutoSize = true;
+			this->lowerRangeYes->Checked = true;
+			this->lowerRangeYes->Location = System::Drawing::Point(6, 10);
+			this->lowerRangeYes->Name = L"lowerRangeYes";
+			this->lowerRangeYes->Size = System::Drawing::Size(43, 17);
+			this->lowerRangeYes->TabIndex = 26;
+			this->lowerRangeYes->TabStop = true;
+			this->lowerRangeYes->Text = L"Yes";
+			this->lowerRangeYes->UseVisualStyleBackColor = true;
+			// 
+			// radioButton2
+			// 
+			this->radioButton2->AutoSize = true;
+			this->radioButton2->Location = System::Drawing::Point(6, 26);
+			this->radioButton2->Name = L"radioButton2";
+			this->radioButton2->Size = System::Drawing::Size(46, 17);
+			this->radioButton2->TabIndex = 27;
+			this->radioButton2->Text = L"Skip";
+			this->radioButton2->UseVisualStyleBackColor = true;
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(519, 495);
+			this->Controls->Add(this->groupBox2);
+			this->Controls->Add(this->label1);
+			this->Controls->Add(this->rangeLowerInput);
 			this->Controls->Add(this->Rscore);
 			this->Controls->Add(this->addSetButton);
 			this->Controls->Add(this->setsOfData_label);
@@ -662,6 +726,8 @@ namespace LIBSProcessing {
 			this->groupBox1->PerformLayout();
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
+			this->groupBox2->ResumeLayout(false);
+			this->groupBox2->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -720,11 +786,18 @@ namespace LIBSProcessing {
 	private: System::Void preview_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (b.getAveragedSpectra()) {}
 		else { MessageBox::Show("Error - no files loaded"); return; }
-		int option = 2;
+		int option;
+		//option 1 - highest point in range, skip range for finding lowest point
+		//option 2 - sum in range, skip range for finding lowest point
+		//option 3 - highest point in range, yes for range for finding lowest point
+		//option 4 - sum in range, yes for range for finding lowest point
 		if (highestCheckbox->Checked) { option = 1; }
+		
 		float range;
+		float lowerRange;
 		try {
 			range = Convert::ToSingle(rangeInput->Text);
+			lowerRange = Convert::ToSingle(rangeLowerInput->Text);
 			if (range < 0) { range = -1 * range; };
 		}
 		catch (...) {
@@ -733,12 +806,12 @@ namespace LIBSProcessing {
 		}
 		//Perform operations to retrieve division information 
 		if (calibrationToolStripMenuItem->Checked) {
-			b.getRequestedSpectraCalibrationMode(option, range);
+			b.getRequestedSpectraCalibrationMode(option, range, lowerRangeYes->Checked, lowerRange);
 			Rscore->Text = "R^2 score: " + Convert::ToString(b.getRSquared());
 		}
 		//standard mode operation
 		else {
-			b.getRequestedSpectraStandardMode(option, range);
+			b.getRequestedSpectraStandardMode(option, range, lowerRangeYes->Checked, lowerRange);
 			
 		}
 	}
@@ -929,8 +1002,5 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		saveSelectedBox->Enabled = value;
 
 		   }
-
-
-
 };
 }

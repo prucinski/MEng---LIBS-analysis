@@ -260,21 +260,21 @@ public:
 	//function to be called by the UI to process the dictionary as per our selected wavelengths.
 	//option values:	1 - find highest peak within range
 	//					2 - sum all datapoints within range
-	int getRequestedSpectraStandardMode(int option, float range) {
+	int getRequestedSpectraStandardMode(int option, float range, bool doLowerRange, float lowerRange) {
 		//first, keys CLOSEST to the value that the user input must be found.
 		findKeys();
-		findRequestedValues(option, range);
+		findRequestedValues(option, range, doLowerRange, lowerRange);
 		return 1;
 	}
 
-	int getRequestedSpectraCalibrationMode(int option, float range) {
+	int getRequestedSpectraCalibrationMode(int option, float range, bool doLowerRange, float lowerRange) {
 		//if we have less than 1 item, discard. We will check for whether each set has it's own wavelengths later.
 		if (selectedWavelengths->Count < 1) {
 			return 0;
 		}
 		//first, keys CLOSEST to the value that the user input must be found.
 		findKeys();
-		findRequestedValuesCalibration(option, range);
+		findRequestedValuesCalibration(option, range, doLowerRange, lowerRange);
 		return 1;
 	}
 
@@ -513,7 +513,7 @@ private:
 	}
 
 	//Find the results in a provided range.
-	int findRequestedValues(int option, float range) {
+	int findRequestedValues(int option, float range, bool doLowerRange, float lowerRange) {
 		//reset the "presentToUser" dictionary.
 		presentToUserResult = gcnew Dictionary<float, float>();
 		float rangeEachWay = range / 2;
@@ -521,7 +521,7 @@ private:
 		int i = 0;
 		for each (float key in userSelectionsToKeys) {
 			//first, find it for the averaged dictionaries
-			Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, result);
+			Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, true, result);
 			//now we have found the highest value. Add to the proper result dictionary.
 			presentToUserResult->Add(retVal->Item1, retVal->Item2);
 			i++;
@@ -535,7 +535,7 @@ private:
 			listOfResultsForFiles->Add(gcnew Dictionary<float, float>());
 			i = 0;
 			for each (float key in userSelectionsToKeys) {
-				Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, fileAsDictionary);
+				Tuple<float, float>^ retVal = findHighestKeyValuePair(i, key, option, rangeEachWay, true, fileAsDictionary);
 				listOfResultsForFiles[j]->Add(retVal->Item1, retVal->Item2);
 				i++;
 			}
@@ -546,7 +546,7 @@ private:
 		return 1;
 	}
 
-	int findRequestedValuesCalibration(int option, float range) {
+	int findRequestedValuesCalibration(int option, float range, bool doLowerRange, float lowerRange) {
 		float rangeEachWay = range / 2;
 		//first, we must measure what kind of values have been selected in the "Currently selected wavelengths" box...
 		bool differentDivisors = false;
@@ -597,9 +597,17 @@ private:
 				listOfProcessedSets[i]->Add(gcnew Dictionary<float, float> ());
 
 				//We now definitely have the correct key for dividend and divisor - now, find the highest key/value pair within range
-				Tuple<float, float>^ retValDividend = findHighestKeyValuePair(whichKey, dividend, option, rangeEachWay, fileAsDictionary);
+				Tuple<float, float>^ retValDividend = findHighestKeyValuePair(whichKey, dividend, option, rangeEachWay, true, fileAsDictionary);
+				if (doLowerRange) {
+					Tuple<float, float>^ retValDividendLower = findHighestKeyValuePair(whichKey, dividend, option, rangeEachWay, false, fileAsDictionary);
+				}
 				Tuple<float, float>^ retValDivisor;
-				if (!singleMode) { retValDivisor = findHighestKeyValuePair(whichKey+1, divisor, option, rangeEachWay, fileAsDictionary); }
+				if (!singleMode) {
+					retValDivisor = findHighestKeyValuePair(whichKey+1, divisor, option, rangeEachWay, true, fileAsDictionary);
+					if (doLowerRange) {
+
+					}
+				}
 				//res = dict[dividend] / (singleMode ? 1 : dict[divisor]);
 				//runningSum += res;
 				//pointer - will retain information
@@ -645,17 +653,25 @@ private:
 	}
 
 	//private function for finding the highest key IN a given set. Function results as a simplification of code when refractoring
-	System::Tuple<float,float>^ findHighestKeyValuePair(int i, float key, int option, float rangeEachWay, Dictionary<float,float>^ inputDict) {
+	System::Tuple<float,float>^ findHighestKeyValuePair(int i, float key, int option, float rangeEachWay, bool whichDir, Dictionary<float,float>^ inputDict) {
 		int index = userSelectionsIndexes[i];
 		float currKey = indexedKeys[index];
 		float tempKey, tempResult;
-		if (option == 2) { tempResult = 0; tempKey = key;}
-		else { tempResult = -9999; tempKey = -1; }
+		if (!whichDir) {
+			tempResult = 99999; tempKey = -1;
+		}
+		else if (option == 1) { tempResult = -9999; tempKey = -1; }
+		else if (option == 2) { tempResult = 0; tempKey = key;}
 		while (Math::Abs(key - currKey) < rangeEachWay) {
 			if (option == 1) {
 				tempResult = inputDict[currKey] > tempResult ? inputDict[currKey] : tempResult;
 				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
 			}
+			else if (!whichDir) {
+				tempResult = inputDict[currKey] < tempResult ? inputDict[currKey] : tempResult;
+				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
+			}
+
 			else {
 				tempResult += inputDict[currKey];
 			}
@@ -668,11 +684,16 @@ private:
 		index = userSelectionsIndexes[i];
 		currKey = indexedKeys[index + 1];
 		while (Math::Abs(key - currKey) < rangeEachWay) {
-			if (option == 1) {
+			if (option == 1 && whichDir) {
 				tempResult = inputDict[currKey] > tempResult ? inputDict[currKey] : tempResult;
 				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
 
 			}
+			else if (!whichDir) {
+				tempResult = inputDict[currKey] < tempResult ? inputDict[currKey] : tempResult;
+				tempKey = inputDict[currKey] == tempResult ? currKey : tempKey;
+			}
+
 			else {
 				tempResult += inputDict[currKey];
 			}

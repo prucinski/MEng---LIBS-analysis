@@ -1,5 +1,3 @@
 ﻿  Window.cpp
-  .NETFramework,Version=v4.7.2.AssemblyAttributes.cpp
-  Generating Code...
   Window.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
   LIBSProcessing.vcxproj -> C:\MEng\LIBSProcessing\Release\LIBSProcessing.exe

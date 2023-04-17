@@ -1,2 +1,3 @@
 C:\MEng\LIBSProcessing\LIBSProcessing\Release\LIBSProcessing.Window.resources
 C:\MEng\LIBSProcessing\LIBSProcessing\Release\LIBSProcessing.vcxproj.GenerateResource.cache
+C:\MEng\LIBSProcessing\LIBSProcessing\Release\LIBSProcessing.vcxproj.AssemblyReference.cache
