@@ -134,7 +134,7 @@ public:
 					}
 					sw->Write(Convert::ToString(key) + "," + Convert::ToString(fileAsDictionary[key])+",");
 					j++;
-					if (j % 2 == 0 && j > 0) {
+					if (j % 2 == 0 && j > 0 && lowestPoint) {
 						if (tempHighest > 3 * tempLowest) {
 							sw->Write("yes,,");
 						}
@@ -155,7 +155,7 @@ public:
 		sw->Close();
 		return 1;
 	}
-	int saveToFileCalibration(String^ name, String^ analyteA, String^ analyteB) {
+	int saveToFileCalibration(String^ name, bool lowestPoint) {
 		if (name) {
 			nameOfFile = "\\" + name;
 		}
@@ -191,23 +191,29 @@ public:
 					sw->Write(",,,");
 					continue;
 				}
-				sw->Write(Convert::ToString(listOfAverages[i])+",");
+				sw->Write(Convert::ToString(listOfAverages[i]) + ",");
 				if (differentDivisors) {
-					sw->Write(Convert::ToString(userSelectionsToKeys[whichKey]) +",");
-					sw->Write(Convert::ToString(userSelectionsToKeys[whichKey+1])+",");
-					whichKey+=2;
+					sw->Write(Convert::ToString(userSelectionsToKeys[whichKey]) + ",");
+					sw->Write(Convert::ToString(userSelectionsToKeys[whichKey + 1]) + ",");
+					whichKey += 2;
 				}
 				else {
-					sw->Write(Convert::ToString(userSelectionsToKeys[0])+",");
-					sw->Write(Convert::ToString(userSelectionsToKeys[1])+",");
+					sw->Write(Convert::ToString(userSelectionsToKeys[0]) + ",");
+					sw->Write(Convert::ToString(userSelectionsToKeys[1]) + ",");
 				}
-				sw->Write(Convert::ToString(listOfConcentrations[i])+"\n");
+				sw->Write(Convert::ToString(listOfConcentrations[i]) + "\n");
 			}
-			sw->Write("R2 score," + Convert::ToString(global_r2)+"\n");
+			sw->Write("R2 score," + Convert::ToString(global_r2) + "\n");
 			sw->Write("Individual results\n");
-			sw->Write("File no., wavelength, intensity\n");
+			if (lowestPoint) {
+				sw->Write(",HIGHEST->,,,<-,LOWEST->,,,<-\n");
+			}
+			sw->Write("File no., divid. wavelength, intensity, divisor wavelength, intensity,");
+			if (lowestPoint) {
+				sw->Write(",,,,1.peak?,2.peak?,");
+			}
 			for (int i = 0; i < metadata->Count; i++) {
-				sw->Write("S" + Convert::ToString(i + 1) + "\n");
+				sw->Write("\nS" + Convert::ToString(i + 1) + "\n");
 				if (listOfAverages[i] == -1) {
 					sw->Write(",,,");
 					continue;
@@ -215,10 +221,39 @@ public:
 				int j = 1;
 				for each (Dictionary<float, float> ^ fileAsDictionary in listOfProcessedSets[i]) {
 					sw->Write("File " + (Convert::ToString(j)) + ",");
+					int k = 0;
+					float firstHighest, firstLowest, secondHighest, secondLowest;
 					for each (float key in fileAsDictionary->Keys) {
+						if (k % 4 == 0) {
+							firstHighest = fileAsDictionary[key];
+						}
+						else if (k % 4 == 1) {
+							secondHighest = fileAsDictionary[key];
+						}
+						else if (k % 4 == 2) {
+							firstLowest = fileAsDictionary[key];
+						}
+						else if (k % 4 == 3) {
+							secondLowest = fileAsDictionary[key];
+						}
 						sw->Write(Convert::ToString(key) + "," + Convert::ToString(fileAsDictionary[key]) + ",");
-						j++;
+						k++;
+						if (k % 4 == 0 && k > 0 && lowestPoint) {
+							if (firstHighest > 3 * firstLowest) {
+								sw->Write(",yes,");
+							}
+							else {
+								sw->Write(",no,");
+							}
+							if (secondHighest > 3 * secondLowest) {
+								sw->Write("yes,");
+							}
+							else {
+								sw->Write("no,");
+							}
+						}
 					}
+					j++;
 					sw->Write("\n");
 				}
 			}
@@ -653,7 +688,7 @@ private:
 				if (!singleMode) {
 					retValDivisor = findHighestKeyValuePair(whichKey+1, divisor, option, rangeEachWay, true, fileAsDictionary);
 					if (doLowerRange) {
-						 retValDividerLower = findHighestKeyValuePair(whichKey, divisor, option, lowerRange / 2, false, fileAsDictionary);
+						 retValDividerLower = findHighestKeyValuePair(whichKey+1, divisor, option, lowerRange / 2, false, fileAsDictionary);
 					}
 				}
 				//res = dict[dividend] / (singleMode ? 1 : dict[divisor]);

@@ -820,7 +820,7 @@ namespace LIBSProcessing {
 	//GUI handler - save file
 	private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (calibrationToolStripMenuItem->Checked) {
-			int success = b.saveToFileCalibration(nameOfFile->Text, "TODO", analyteBox_setB->Text);
+			int success = b.saveToFileCalibration(nameOfFile->Text, lowerRangeYes->Checked);
 			if(success == 0){
 				MessageBox::Show("Error - file was unable to be saved with name " + b.nameOfFile);
 
