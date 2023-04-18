@@ -206,11 +206,11 @@ public:
 			sw->Write("R2 score," + Convert::ToString(global_r2) + "\n");
 			sw->Write("Individual results\n");
 			if (lowestPoint) {
-				sw->Write(",HIGHEST->,,,<-,LOWEST->,,,<-\n");
+				sw->Write(",HIGHEST->,,,,LOWEST->,,,\n");
 			}
 			sw->Write("File no., divid. wavelength, intensity, divisor wavelength, intensity,");
 			if (lowestPoint) {
-				sw->Write(",,,,1.peak?,2.peak?,");
+				sw->Write(",,,,,1.peak?,2.peak?,");
 			}
 			for (int i = 0; i < metadata->Count; i++) {
 				sw->Write("\nS" + Convert::ToString(i + 1) + "\n");
@@ -672,7 +672,6 @@ private:
 			if (differentDivisors) {
 				dividend = userSelectionsToKeys[whichKey];
 				divisor = userSelectionsToKeys[whichKey + 1];
-				whichKey += 2;
 			}
 			for each (Dictionary<float, float> ^ fileAsDictionary in set) {
 				listOfProcessedSets[i]->Add(gcnew Dictionary<float, float> ());

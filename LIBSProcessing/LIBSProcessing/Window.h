@@ -1001,7 +1001,6 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		//rangeInput->Enabled = value;
 		setNumbersLabel->Enabled = !value;
 		saveSelectedBox->Enabled = value;
-
-		   }
+	}
 };
 }
