@@ -92,7 +92,7 @@ public:
 			}
 			sw->Write("AVERAGE OF INDIVIDUAL HIGHEST WITHIN RANGE\n");
 			int i = 0, j = 0;
-			sw->Write("Key,Result\n");
+			sw->Write("Supp. wavelength,Result\n");
 			for each (float result in listOfAveragedIndividualResults) {
 				if (i % 2 != 0 && lowestPoint) {
 					i++;
@@ -104,7 +104,7 @@ public:
 			}
 			sw->Write("\n");
 			sw->Write("Division of averaged first intensity over the other:,,,,,"+Convert::ToString(returnDivisionFromTwoFirst(listOfAveragedIndividualResults))+"\n\n");
-			sw->Write("(Individual results\n");
+			sw->Write("Individual results\n");
 			if (lowestPoint) {
 				sw->Write(",,,,(optional),(optional)\n");
 			}
@@ -136,10 +136,10 @@ public:
 					j++;
 					if (j % 2 == 0 && j > 0) {
 						if (tempHighest > 3 * tempLowest) {
-							sw->Write("yes,");
+							sw->Write("yes,,");
 						}
 						else {
-							sw->Write("no,");
+							sw->Write("no,,");
 						}
 					}
 				}
