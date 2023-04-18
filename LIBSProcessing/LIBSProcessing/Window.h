@@ -864,6 +864,7 @@ namespace LIBSProcessing {
 
 private: System::Void standardToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
 	setCalibrationGroup(true);
+	setSetAddedGroup(false);
 
 }
 private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -883,6 +884,7 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		   b.initializeSets(attemptConversion);
 		   setsOfData->DataSource = nullptr;
 		   setsOfData->DataSource = b.metadata;
+		   setSetAddedGroup(true);
 		   howManySets->Text = "";
 
 
@@ -917,7 +919,8 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		b.addSetToSets(concentration, i, cutoff);
 		setsOfData->DataSource = nullptr;
 		setsOfData->DataSource = b.metadata;
-		selectFilesLabel_setB->Text = "Select files to process:.";
+		selectFilesLabel_setB->Text = "Select files to process:";
+		analyteBox_setB->Text = "";
 		setsOfData->SelectedIndex = i >= b.metadata->Count-1 ? i : i + 1;
 		return;
 	}
@@ -990,9 +993,9 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		selectFilesLabel_setB->Enabled = !value;
 		analyteLabel_setB->Enabled = !value;
 		analyteBox_setB->Enabled = !value;
-		fileSelect_setB->Enabled = !value;
+		//fileSelect_setB->Enabled = !value;
 		selectFilesLabel_setB->Enabled = !value;
-		addSetButton->Enabled = !value;
+		//addSetButton->Enabled = !value;
 		//information
 		setsOfData->Enabled = !value;
 		setsOfData_label->Enabled = !value;
@@ -1001,6 +1004,12 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		//rangeInput->Enabled = value;
 		setNumbersLabel->Enabled = !value;
 		saveSelectedBox->Enabled = value;
+	}
+
+	private: void setSetAddedGroup(bool value) {
+		fileSelect_setB->Enabled = value;
+		addSetButton->Enabled = value;
+		
 	}
 };
 }
