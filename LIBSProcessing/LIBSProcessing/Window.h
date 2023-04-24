@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * \file   Window.h
+ * \brief  File handling the UI of the programme.
+ * 
+ * \author PR
+ * \date   April 2023
+ *********************************************************************/
 #pragma once
 #include "Backend.h"
 
@@ -10,13 +17,16 @@ namespace LIBSProcessing {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	/// <summary>
-	/// Summary for Window
-	/// </summary>
+	/**
+	 *@brief Class handling the display of the user interface (later referred to as GUI or UI). Primarily has functions responsible for recording
+	 * button presses.
+	 */
 	public ref class Window : public System::Windows::Forms::Form
 	{
 	public:
-		
+		/**
+		 * Initialization of the GUI.
+		 */
 		Window(void)
 		{
 			InitializeComponent();
@@ -128,14 +138,14 @@ namespace LIBSProcessing {
 
 	private:
 		/// <summary>
-		/// Required designer variable.
+		/// Automatically generated code for the use of Windows Forms Designer. Should not be modified directly by the user.
 		/// </summary>
 
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
+		/// the contents of this method with the code editor.\n Functions will be calling the backend internally.
 		/// </summary>
 		void InitializeComponent(void)
 		{
@@ -553,7 +563,7 @@ namespace LIBSProcessing {
 			this->analyteLabel_setB->Name = L"analyteLabel_setB";
 			this->analyteLabel_setB->Size = System::Drawing::Size(174, 13);
 			this->analyteLabel_setB->TabIndex = 43;
-			this->analyteLabel_setB->Text = L"Analyte concentration for given set:";
+			this->analyteLabel_setB->Text = L"Analyte concentration (ppm) for given set:";
 			// 
 			// howManyLabel
 			// 
@@ -741,10 +751,16 @@ namespace LIBSProcessing {
 	//GUI handler - submit an ELEMENT'S wavelengths to the list
 	private: System::Void elemSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
 
-		//TODO: database handling!
+		//Currently empty
 
 	}
-	//GUI handler - submit custom wavelengths to the list
+	/**
+	* GUI handler - submitting custom wavelengths to the list.
+	* 
+	* \param sender N/A
+	* \param e N/A
+	* \return Void.
+	*/
 	private: System::Void waveSubmit_Click(System::Object^ sender, System::EventArgs^ e) {
 		float attemptConversion;
 		//try converting - if failed, show a message to the user
@@ -765,8 +781,13 @@ namespace LIBSProcessing {
 		waveEdit->Text = "";
 
 	}
-
-	//GUI handler - save the folder path for saving the results.
+	 /**
+	 * GUI handler - save the folder path for user results..
+	 *
+	 * \param sender N/A
+	 * \param e N/A
+	 * \return Void.
+	 */
 	private: System::Void saveFolderSelect_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (folderBrowser->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 		{
@@ -775,7 +796,13 @@ namespace LIBSProcessing {
 			b.directory = folderName;		//set the directory in the backend
 		}
 	}
-	//GUI handler - remove wavelength from analysis
+	/**
+	* GUI handler - remove wavelength from analysis.
+	*
+	* \param sender N/A
+	* \param e N/A
+	* \return Void.
+	*/
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
 		float waveToRemove = Convert::ToSingle(allWavelenghts->Text);
 		b.removeWavelength(waveToRemove);
@@ -784,6 +811,13 @@ namespace LIBSProcessing {
 	}
 
 	//GUI handler - preview all options - actually processes the data for now as well
+	/**
+	 * GUI handler - process the submitted data.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return Void.
+	 */
 	private: System::Void preview_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (b.getAveragedSpectra()) {}
 		else { MessageBox::Show("Error - no files loaded"); return; }
@@ -816,8 +850,13 @@ namespace LIBSProcessing {
 			
 		}
 	}
-
-	//GUI handler - save file
+	/**
+	 * GUI handler - save to a file.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return Void.
+	 */
 	private: System::Void saveToFile_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (calibrationToolStripMenuItem->Checked) {
 			int success = b.saveToFileCalibration(nameOfFile->Text, lowerRangeYes->Checked);
@@ -850,46 +889,92 @@ namespace LIBSProcessing {
 
 	}
 
-	//GUI handler - load the files into the system
+	/**
+	 * GUI handler - select files.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return Void.
+	 */
 	private: System::Void fileSelect_Click(System::Object^ sender, System::EventArgs^ e) {
 		handleSelection(1);
 	}
-
-	 private: System::Void fileSelect_setB_Click(System::Object^ sender, System::EventArgs^ e) {
+	/**
+	 * GUI handler - select files - calibration mode.
+	 * 
+	 * \param sender
+	 * \param e
+	 * \return Void.
+	 */
+	private: System::Void fileSelect_setB_Click(System::Object^ sender, System::EventArgs^ e) {
 		 handleSelection(2);
 		 selectFilesLabel_setB->Text = "Files selected.";
-	 }
+	}
+
+	/**
+	 * GUI handler - load the window. Currently empty.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return Void.
+	 */
 	private: System::Void Window_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
 
-private: System::Void standardToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	setCalibrationGroup(true);
-	setSetAddedGroup(false);
+	/**
+	 * GUI handler - select standard mode in toolbar.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return Void.
+	 */
+	private: System::Void standardToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+		setCalibrationGroup(true);
+		setSetAddedGroup(false);
 
-}
-private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-	setCalibrationGroup(false);
+	}
+	/**
+	 * GUI handler - select calibration mode in toolbar.
+	 * 
+	 * \param sender
+	 * \param e
+	 * \return 
+	 */
+	private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+		setCalibrationGroup(false);
 
-}	
-	   //HANDLER - see how many sets the user is trying to initialize
-	   private: System::Void howManySubmit_Click(System::Object^ sender, System::EventArgs^ e) {
-		   int attemptConversion;
-		   try {
-			   attemptConversion = Convert::ToInt32(howManySets->Text);
-		   }
-		   catch (...) {
-			   MessageBox::Show("Error - please input an integer value");
-			   return;
-		   }
-		   b.initializeSets(attemptConversion);
-		   setsOfData->DataSource = nullptr;
-		   setsOfData->DataSource = b.metadata;
-		   setSetAddedGroup(true);
-		   howManySets->Text = "";
+	}	
+	/**
+	 * GUI handler - see how many sets the user is trying to initialize & then do so.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return Void.
+	 */
+	private: System::Void howManySubmit_Click(System::Object^ sender, System::EventArgs^ e) {
+		int attemptConversion;
+		try {
+			attemptConversion = Convert::ToInt32(howManySets->Text);
+		}
+		catch (...) {
+			MessageBox::Show("Error - please input an integer value");
+			return;
+		}
+		b.initializeSets(attemptConversion);
+		setsOfData->DataSource = nullptr;
+		setsOfData->DataSource = b.metadata;
+		setSetAddedGroup(true);
+		howManySets->Text = "";
 
 
-	   }
-		//HANDLER - initialize sets in the backend
+	}
+	/**
+	 * GUI handler - set has been added, initialize it in the backend.
+	 * 
+	 * \param sender NA
+	 * \param e NA
+	 * \return 
+	 */
 	private: System::Void addSetButton_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (b.filesToExtract_B == nullptr || b.filesToExtract_B->Count == 0) {
 			MessageBox::Show("Error - no files selected");
@@ -929,6 +1014,11 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 	/// Helper functions, not to clutter the main UI code - mainly with a single switch
 	/// </summary>
 
+	/**
+	 * GUI helper function - verify whether files selected by the user are valid & check the cutoff value.
+	 * 
+	 * \param selectionWindow
+	 */
 	private: void handleSelection(int selectionWindow) {
 		float cutoff;
 		//if loaded files successfully, 
@@ -976,6 +1066,11 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 			}
 		}
 	}
+	/**
+	 * GUI helper function - set buttons to Calibration mode.
+	 * 
+	 * \param value true if enable calibration group, false otherwise.
+	 */
 	private: void setCalibrationGroup(bool value) {
 		standardToolStripMenuItem->Checked = value;
 		calibrationToolStripMenuItem->Checked = !value;
@@ -1005,7 +1100,11 @@ private: System::Void calibrationToolStripMenuItem_Click(System::Object^ sender,
 		setNumbersLabel->Enabled = !value;
 		saveSelectedBox->Enabled = value;
 	}
-
+	/**
+	 * GUI helper function - set buttons to active/inactive after number of sets have been added.
+	 * 
+	 * \param value True if enable buttons in set, false if disable.
+	 */
 	private: void setSetAddedGroup(bool value) {
 		fileSelect_setB->Enabled = value;
 		addSetButton->Enabled = value;

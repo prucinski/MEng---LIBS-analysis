@@ -1,3 +1,12 @@
+/*****************************************************************//**
+ * \file   Window.cpp
+ * \brief  File running the programme.
+ * 
+ * 
+ * \author PR
+ * \date   April 2023
+ *********************************************************************/
+
 #include "Window.h"
 
 using namespace System;

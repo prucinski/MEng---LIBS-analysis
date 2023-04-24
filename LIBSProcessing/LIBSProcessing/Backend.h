@@ -1,3 +1,10 @@
+/*****************************************************************//**
+ * @file   Backend.h
+ * @brief  File handling all the backend functions, invisible to the user.
+ * 
+ * @author PR
+ * @date   April 2023
+ *********************************************************************/
 #pragma once
 
 
@@ -5,19 +12,23 @@ using namespace System;
 using namespace System::IO;
 using namespace System::Windows::Forms;
 using namespace System::Collections::Generic;
-/*
-* Class handling the backend functions of the entire programme. That includes:
-* -opening files after UI has provided this class a list of filenames.
-* -converting said files into a data format processable by the programme.
-* -storing the selected peaks, as well as the database in memory.
-* -saving information to a file.
-* 
-*/
+
 
 //how many datapoints are there?
 #define DATASIZE 26607
 #define LINESTOSKIP 105
 
+
+/** 
+* @brief Class handling the backend functions of the entire programme. Public variables are expanded on within the code.
+*
+*  The class has the following main functions:
+* \n-opening files after UI has provided this class a list of filenames.
+* \n-converting said files into a data format processable by the programme.
+* \n-storing the selected peaks, as well as any database present in memory.
+* \n-saving information to a file.
+*
+*/
 public ref class Backend {
 
 
@@ -58,8 +69,14 @@ public:
 		//initialize the (now empty) dynamically allocated array.
 		selectedWavelengths = gcnew List<float>();
 	}
-
-
+	/**
+	 * Save a processed data structure to a file in standard LIBS mode.
+	 * 
+	 * \param name Name of file to save to.
+	 * \param selectedOnly Save all wavelengths to a file; or only the ones selected by the user.
+	 * \param lowestPoint Option describing whether the user is also interested in saving the lowest values in range to file.
+	 * \return Returns an integer describing success/fail of function. 1 - file saved; 0 - file locked by OS; -1 - file not saved because of user/programmer error.
+	 */
 	int saveToFile(String^ name, bool selectedOnly, bool lowestPoint) {
 		//see if user put in any input; if not, do a default
 		if (name) {
@@ -155,6 +172,13 @@ public:
 		sw->Close();
 		return 1;
 	}
+	/**
+	 * Save a processed data structure to a file in calibration LIBS mode. 
+	 *
+	 * \param name Name of file to save to. Does not have to have a correct extension.
+	 * \param lowestPoint Option describing whether the user is also interested in saving the lowest values in range to file.
+	 * \return Returns an integer describing success/fail of function. 1 - file saved; 0 - file locked by OS; -1 - file not saved because of user/programmer error.
+	 */
 	int saveToFileCalibration(String^ name, bool lowestPoint) {
 		if (name) {
 			nameOfFile = "\\" + name;
@@ -263,17 +287,19 @@ public:
 			sw->Close();
 			return -1;
 		}
-
-
-
-
-
 		sw->Close();
 
 
 		return 1;
 	}
-
+	/**
+	 * Function reading files from disc. Admittedly could be simplified together with GUI as it doesn't need two file selection buttons. 
+	 * 
+	 * \param fileNames Array of filenames. This list of files should be selected by the user in the GUI; using standard Windows libraries.
+	 * \param cutoff Values of light intensities below which the intensity will be set to 0 when initializing data structures. Default -199.
+	 * \param whichMode Integer describing which mode the programme is operating in. 1 - standard LIBS mode, 2 - calibration LIBS mode.
+	 * \return Returns an integer indicating status. 0 - loading of files failed. 1 - load successful.
+	 */
 	int loadFiles(array<String^>^ fileNames, float cutoff, int whichMode) {
 		List<String^>^ files;
 		if (whichMode == 1) {
@@ -302,7 +328,12 @@ public:
 		return initializeMemoryFiles(cutoff, whichMode);
 
 	}
-
+	/**
+	 * Function initializing data structures in memory. These are intialized in order to be index-addressable in other functions.
+	 * 
+	 * \param length Number of sets of files that should be initialized.
+	 * \return Always returns 1 - function cannot fail execution.
+	 */
 	int initializeSets(int length) {
 		metadata = gcnew List <String^>(length);
 		listOfSets = gcnew List< List<Dictionary<float, float>^>^>(length);
@@ -321,26 +352,57 @@ public:
 		return 1;
 
 	}
-
+	/**
+	 * Function adding loaded files to a set at a given index.
+	 * 
+	 * \param concentration User-supplied for a given set.
+	 * \param index of the current set selected. Provided by which set user currently has selected in the GUI.
+	 * \param cutoff Values of light intensities below which the intensity will be set to 0 when initializing data structures. Default -199.
+	 * \return Returns 1 on success and 0 on failure.
+	 */
 	int addSetToSets(float concentration, int index, float cutoff) {
-		listOfConcentrations[index] = concentration;
-		listOfSets[index] = gcnew List<Dictionary<float, float>^>();
-		listOfSets[index]->AddRange(listOfDictionaries_B);
-		metadata[index] = Convert::ToString(index + 1) + ".SET: " + listOfDictionaries_B->Count + " FILES, CUTOFF " +
-			cutoff + ", CONT." + concentration;
-		return 1;
+		try {
+			listOfConcentrations[index] = concentration;
+			listOfSets[index] = gcnew List<Dictionary<float, float>^>();
+			listOfSets[index]->AddRange(listOfDictionaries_B);
+			metadata[index] = Convert::ToString(index + 1) + ".SET: " + listOfDictionaries_B->Count + " FILES, CUTOFF " +
+				cutoff + ", CONT." + concentration;
+			return 1;
+		}
+		catch (...) {
+			return 0;
+		}
 	}
 
-	//function to be called by the UI to process the dictionary as per our selected wavelengths.
-	//option values:	1 - find highest peak within range
-	//					2 - sum all datapoints within range
+
+	/**
+	 * Function called by the UI frontend, processing loaded data in accordance to the selected wavelengths in single mode. Serves as an intermediate step
+	 * between other functions.
+	 * 
+	 * \param option Option for how to process the data. 1 - find the highest peak within range,
+	 *													 2- sum all datapoints within range.
+	 * \param range Float specifying how many datapoints are looked at. User provided values for wavelengths assumed to be in them middle of this range.
+	 * \param doLowerRange boolean specifying whether the user has requested to find lowest values in some range as well.
+	 * \param lowerRange If the user requests that lowest point is found - analogous to parameter 'range'.
+	 * \return Always returns 1 - programme will fail before reaching the call of this function.
+	 */
 	int getRequestedSpectraStandardMode(int option, float range, bool doLowerRange, float lowerRange) {
 		//first, keys CLOSEST to the value that the user input must be found.
 		findKeys();
 		findRequestedValues(option, range, doLowerRange, lowerRange);
 		return 1;
 	}
-
+	/**
+	 * Function called by the UI frontend, processing loaded data in accordance to the selected wavelengths in calibration mode. Serves as an intermediate step
+	 * between other functions.
+	 *
+	 * \param option Option for how to process the data. 1 - find the highest peak within range,
+	 *													 2- sum all datapoints within range.
+	 * \param range Float specifying how many datapoints are looked at. User provided values for wavelengths assumed to be in them middle of this range.
+	 * \param doLowerRange - boolean specifying whether the user has requested to find lowest values in some range as well.
+	 * \param lowerRange If the user requests that lowest point is found - analogous to parameter 'range'.
+	 * \return Returns 1 on success, 0 on failure.
+	 */
 	int getRequestedSpectraCalibrationMode(int option, float range, bool doLowerRange, float lowerRange) {
 		//if we have less than 1 item, discard. We will check for whether each set has it's own wavelengths later.
 		if (selectedWavelengths->Count < 1) {
@@ -351,11 +413,20 @@ public:
 		findRequestedValuesCalibration(option, range, doLowerRange, lowerRange);
 		return 1;
 	}
-
+	/**
+	 * Function averaging all spectra out in a set. Serves as an intermediate step between UI and a private function.
+	 * 
+	 * \return Returns 1 on success, 0 otherwise.
+	 */
 	int getAveragedSpectra() {
 		return sumDictionaries();
 	}
-
+	/**
+	 * Function adding an user-supplied wavelength to an internal data structure. Checks if wavelength is correct as well.
+	 * 
+	 * \param wavelength Wavelength to be added.
+	 * \return Returns 1 if wavelength is valid; 0 otherwise.
+	 */
 	int addWavelength(float wavelength) {
 		if (wavelength < 200.93 || wavelength > 1031.86) {
 			return 0;
@@ -363,13 +434,25 @@ public:
 		selectedWavelengths->Add(wavelength);
 		return 1;
 	}
-
+	/**
+	 * Function removing an user-supplied wavelength from an internal data structure.
+	 * 
+	 * \param wavelength Wavelength to be removed.
+	 * \return 1 if removal successful, 0 otherwise. 0 should never be reached and this should be ensured in the Window.h file.
+	 */
 	int removeWavelength(float wavelength) {
+		if (!selectedWavelengths->Contains(wavelength)) {
+			return 0;
+		}
 		selectedWavelengths->Remove(wavelength);
 		return 1;
 	}
 
-	//function to calculate the R value, after we have processed all the data files.
+	/**
+	 * Function calculating R^2 value; called after files in calibration mode have been initialized.
+	 * 
+	 * \return Returns the value of R^2. ALso initializes the global value of R^2 in the prgramme.
+	 */
 	float getRSquared() {
 		//calculate average intensity & average concentration; all concentrations.
 		float runningSumInt = 0, runningSumCon = 0;
@@ -418,7 +501,14 @@ public:
 
 
 private:
-	//pass by reference. Function to pass the information from the file into a data structure.
+	/**
+	 * Private function converting a raw file to a dictionary data structure.
+	 * 
+	 * \param dict Pass by reference - dictionary into which a file should be parsed.
+	 * \param filename Name of file to be processed into a datastructure.
+	 * \param cutoff Value of cutoff, below which the intensity of a given datapoint will be brought down to 0. Default -199.
+	 * \return Returns a status flag. 1 - file successfully processed. 0 - file read failed.
+	 */
 	int processFileIntoDictionary(Dictionary<float, float>^ dict, String^ filename, float cutoff) {
 		//file might be opened by another process
 		StreamReader^ sr;
@@ -454,17 +544,19 @@ private:
 		}
 		return 1;
 	}
-
-	//function to internally extract data from files, and initialize them into RAM.
-	//Overheads were considered, but overall loading 10 files, 26606 lines, each line being 2 * 4 bytes,
-	//we have 10*26606 *8 = 2128480B = 2078 KiB = around 2MiB. All is good.
-	//Depending on the version of the programme, data will be double instead of float, so 4MiB.
-
-	int initializeMemoryFiles(float cutoff, int whichDictionary) {
+	/**
+	 * Private function to extract data from all selected files (as per internally initialized list of files) and load them into RAM.
+	 * Goes one by one for each filename provided.
+	 * 
+	 * \param cutoff Value of cutoff, below which the intensity of a given datapoint will be brought down to 0. Default -199.
+	 * \param whichMode Integer describing which mode the programme is operating in. 1 - standard LIBS mode, 2 - calibration LIBS mode.
+	 * \return Returns 1 on success and 0 on failure.
+	 */
+	int initializeMemoryFiles(float cutoff, int whichMode) {
 		List<String^>^ files;
 		int lengthOfListOfMaps;
 		List<Dictionary<float, float>^>^ currentListOfDictionaries;
-		if (whichDictionary == 1) {
+		if (whichMode == 1) {
 			lengthOfListOfMaps = filesToExtract->Count;
 			////allocating memory so that the array does not need resizing
 			listOfDictionaries = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
@@ -473,7 +565,7 @@ private:
 			files = filesToExtract;
 
 		}
-		else if (whichDictionary == 2) {
+		else if (whichMode == 2) {
 			lengthOfListOfMaps = filesToExtract_B->Count;
 			listOfDictionaries_B = gcnew List<Dictionary<float, float>^>(lengthOfListOfMaps);
 			currentListOfDictionaries = listOfDictionaries_B;
@@ -493,8 +585,13 @@ private:
 		return 1;
 	}
 
-	//sum all our dictionaries into one resulting dictionary. This can be useful when we want to see the strongest peaks across n files.
-	//this function also initializes indexed keys, which are crucial for O(1) operation.
+	/**
+	 * Private function summing all dictionaries into one resulting dictionaries, for when the strongest signal wants to be seen across n files.
+	 * This function also initializes indexed keys, which in itself is crucial for O(1) operation - however, it would be good practice to have them
+	 * be initialized in a separate function and decouple the code a bit.
+	 * 
+	 * \return Always returns 1, as function will be always successful if the programme execution reaches this point.
+	 */
 	int sumDictionaries() {
 		//Even if there was a dictionary before, garbage collect it and create a new one.
 		result = gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP);
@@ -522,13 +619,17 @@ private:
 
 	}
 
-	//find keys for user-supplied values. This was probably the trickiest part of the design to get a good time complexity.
-	//It fills the dictionary that's self-contained.
+	/**
+	 * Private function that finds the appropriate keys for the values that user supplies. It does so by looking for the closest key to the value supplied.
+	 * Heavily amortized O(n) time complexity for this search. Fills the self-contained dictionary.
+	 * 
+	 * \return Always returns 1.
+	 */
 	int findKeys() {
 		//if (userSelectionsToKeys == nullptr) {
 		//every time we process again; we reset the list - easier to handle
-			userSelectionsToKeys = gcnew List<float>();
-			userSelectionsIndexes = gcnew List<int>();
+		userSelectionsToKeys = gcnew List<float>();
+		userSelectionsIndexes = gcnew List<int>();
 		//}
 
 		for each (float wavelength in selectedWavelengths) {
@@ -585,8 +686,16 @@ private:
 		//success.
 		return 1;
 	}
-
-	//Find the results in a provided range.
+	/**
+	 * Private function finding requested values of intensities for previously provided wavelengths in range for standard LIBS mode.
+	 * 
+	 * \param option Option for how to process the data. 1 - find the highest peak within range,
+	 *													    2- sum all datapoints within range.
+	 * \param range	Range in which to find the highest peak value.
+	 * \param doLowerRange Does the user want to find lowest value in range?
+	 * \param lowerRange If yes, what is that range?
+	 * \return Always returns 1.
+	 */
 	int findRequestedValues(int option, float range, bool doLowerRange, float lowerRange) {
 		//reset the "presentToUser" dictionary.
 		presentToUserResult = gcnew Dictionary<float, float>();
@@ -626,7 +735,16 @@ private:
 		listOfAveragedIndividualResults = averageIndividualKeyValuePairs(listOfResultsForFiles);
 		return 1;
 	}
-
+	/**
+	 * Private function finding requested values of intensities for previously provided wavelengths in range for calibration LIBS mode.
+	 *
+	 * \param option Option for how to process the data. 1 - find the highest peak within range,
+	 *													    2- sum all datapoints within range.
+	 * \param range	Range in which to find the highest peak value.
+	 * \param doLowerRange Does the user want to find lowest value in range?
+	 * \param lowerRange If yes, what is that range?
+	 * \return Always returns 1.
+	 */
 	int findRequestedValuesCalibration(int option, float range, bool doLowerRange, float lowerRange) {
 		float rangeEachWay = range / 2;
 		//first, we must measure what kind of values have been selected in the "Currently selected wavelengths" box...
@@ -729,10 +847,14 @@ private:
 		return 1;
 	}
 
-	//Count how many non-null elements there are in the sets
-	//Example: user supplies 4 values of wavelengths.
-	//However, user also claims there are 3 sets to process - but user only submitted to 
-	//set 1 and 3. This code works around that
+	/**
+	 * Function for counting how many non-null elements there are in the sets.
+	 * Example: user supplies 4 values of wavelengths.
+	 * However, user also claims there are 3 sets to process - but user only submitted to 
+	 * set 1 and 3. This code works around that.
+	 * 
+	 * \return Returns the number of valid sets.
+	 */
 	int numberOfValidSets() {
 		int elems = 0;
 		for each (List<Dictionary<float, float>^> ^ set in listOfSets) {
@@ -741,7 +863,19 @@ private:
 		return elems;
 	}
 
-	//private function for finding the highest key IN a given set. Function results as a simplification of code when refractoring
+	/**
+	 * Private function for finding the highest key in a given set.
+	 * 
+	 * \param i The index of the key in the indexedKeys array.
+	 * \param key The value of the key for the dictionary.
+	 * \param option Option for how to process the data. 1 - find the highest peak within range,
+	 *													    2- sum all datapoints within range.
+	 * If whichDir == false, this parameter is discarded.
+	 * \param rangeEachWay The range to check, each way away from the key.
+	 * \param whichDir boolean determining whether the function finds the highest or lowest value in range.
+	 * \param inputDict Dictionary (i. e. file) on which the search is performed; passed by reference.
+	 * \return Returns a tuple of values <highestKey, highestValue> or <lowestKey, lowestValue>, depending on whichDir.
+	 */
 	System::Tuple<float,float>^ findHighestKeyValuePair(int i, float key, int option, float rangeEachWay, bool whichDir, Dictionary<float,float>^ inputDict) {
 		int index = userSelectionsIndexes[i];
 		float currKey = indexedKeys[index];
@@ -795,7 +929,13 @@ private:
 		return retVal;
 	}
 
-	//function to be called privately to average the values for keys in same places
+	/**
+	 * Private function that averages the values of keys in the same user-supplied keys. However, the keys don't necessarily have to be the same -
+	 * this enables calculations for slightly different keys (for example, the highest keys) that had the same user-supplied key value.
+	 * 
+	 * \param LOD List of Dictionaries - passed by reference to find a result in a set of dictionaries.
+	 * \return Returns a smart pointer to a list that holds the results for a given list of dictionaries (files).
+	 */
 	List<float>^ averageIndividualKeyValuePairs(List<Dictionary<float, float>^>^ LOD) {
 		int i;
 		int howManyWavelengths = LOD[0]->Count;
@@ -820,6 +960,12 @@ private:
 	}
 
 	//function to return a division of two first values from list
+	/**
+	 * Function that divides first two items of a list. For programmer's convenience.
+	 * 
+	 * \param givenList List that the division is performed on.
+	 * \return Returns the result of the division.
+	 */
 	float returnDivisionFromTwoFirst(List<float>^ givenList) {
 		if (givenList->Count < 2) {
 			return 0;
