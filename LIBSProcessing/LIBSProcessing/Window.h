@@ -804,6 +804,9 @@ namespace LIBSProcessing {
 	* \return Void.
 	*/
 	private: System::Void removeWave_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (allWavelenghts->Text == "") {
+			return;
+		}
 		float waveToRemove = Convert::ToSingle(allWavelenghts->Text);
 		b.removeWavelength(waveToRemove);
 		allWavelenghts->DataSource = nullptr;

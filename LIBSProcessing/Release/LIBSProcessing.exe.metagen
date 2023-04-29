@@ -40,7 +40,7 @@ Class Backend: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     Single global_r2 : Public
   Methods:
     saveToFile(String, Boolean(HasFieldMarshal), Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
-    saveToFileCalibration(String, String, String): PrivateScope, Public, HideBySig
+    saveToFileCalibration(String, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
     loadFiles(String[], Single, Int32): PrivateScope, Public, HideBySig
     initializeSets(Int32): PrivateScope, Public, HideBySig
     addSetToSets(Single, Int32, Single): PrivateScope, Public, HideBySig

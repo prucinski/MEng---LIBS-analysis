@@ -119,8 +119,13 @@ public:
 				i++;
 				j++;
 			}
-			sw->Write("\n");
-			sw->Write("Division of averaged first intensity over the other:,,,,,"+Convert::ToString(returnDivisionFromTwoFirst(listOfAveragedIndividualResults))+"\n\n");
+			sw->Write("\nDivision of averaged first intensity over the other:,,,,,");
+			if (!lowestPoint) {
+				sw->Write(Convert::ToString(returnDivisionFromTwoFirst(listOfAveragedIndividualResults)) + "\n\n");
+			}
+			else {
+				sw->Write(Convert::ToString(returnDivisionFromFirstThird(listOfAveragedIndividualResults)) + "\n\n");
+			}
 			sw->Write("Individual results\n");
 			if (lowestPoint) {
 				sw->Write(",,,,(optional),(optional)\n");
@@ -293,7 +298,7 @@ public:
 		return 1;
 	}
 	/**
-	 * Function reading files from disc. Admittedly could be simplified together with GUI as it doesn't need two file selection buttons. 
+	 * Function reading files from disc. . 
 	 * 
 	 * \param fileNames Array of filenames. This list of files should be selected by the user in the GUI; using standard Windows libraries.
 	 * \param cutoff Values of light intensities below which the intensity will be set to 0 when initializing data structures. Default -199.
@@ -590,13 +595,16 @@ private:
 	 * This function also initializes indexed keys, which in itself is crucial for O(1) operation - however, it would be good practice to have them
 	 * be initialized in a separate function and decouple the code a bit.
 	 * 
-	 * \return Always returns 1, as function will be always successful if the programme execution reaches this point.
+	 * \return Returns 0 on failure, 1 on success.
 	 */
 	int sumDictionaries() {
 		//Even if there was a dictionary before, garbage collect it and create a new one.
 		result = gcnew Dictionary<float, float>(DATASIZE - LINESTOSKIP);
 		indexedKeys = gcnew List<float>(DATASIZE - LINESTOSKIP);
 		if (listOfDictionaries == nullptr) {
+			if (listOfDictionaries_B == nullptr) {
+				return 0;
+			}
 			//in case user is operating in mode B.
 			listOfDictionaries = listOfDictionaries_B;
 		}
@@ -975,6 +983,25 @@ private:
 		}
 		else {
 			return givenList[1] / givenList[0];
+		}
+	}
+
+	//function to return a division of first and third values from list
+	/**
+	 * Function that divides first two items of a list. For programmer's convenience.
+	 *
+	 * \param givenList List that the division is performed on.
+	 * \return Returns the result of the division.
+	 */
+	float returnDivisionFromFirstThird(List<float>^ givenList) {
+		if (givenList->Count < 3) {
+			return 0;
+		}
+		if (givenList[0] > givenList[2]) {
+			return givenList[0] / givenList[2];
+		}
+		else {
+			return givenList[2] / givenList[0];
 		}
 	}
 
